@@ -11,9 +11,9 @@ module.exports = async (jobDef, documentData) => {
   }
   logger('info', ['syncEnterprise', 'Mapper is defined in options. Will use it.'])
   const { enterpriseNumber } = mapper(documentData)
-  
+
   if (!enterpriseNumber) throw new Error('Mapper must return property "enterpriseNumber"')
-  
+
   const headers = {
     // Til fremtiden: lag en funksjon som henter AzureAD token og legger i header
     'Ocp-Apim-Subscription-Key': archive.ARCHIVE_SUBSCRIPTION_KEY
