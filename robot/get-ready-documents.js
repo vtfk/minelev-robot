@@ -1,5 +1,5 @@
 const { logger } = require('@vtfk/logger')
-const { connect }  = require('../lib/mongo-client')
+const { connect } = require('../lib/mongo-client')
 const { mongodb, DOCUMENTS_PER_RUN, DOCUMENT_DIR } = require('../config')
 const { writeFileSync, renameSync } = require('fs')
 
@@ -17,14 +17,14 @@ const getReadyDocuments = async () => {
       try {
         writeFileSync(`${DOCUMENT_DIR}/queue/${document._id}.json`, JSON.stringify(document, null, 2))
       } catch (error) {
-        logger('error',  ['queue', `Could not save ${document._id} to file, will retry next run`, error.stack])
+        logger('error', ['queue', `Could not save ${document._id} to file, will retry next run`, error.stack])
         continue
       }
       logger('info', ['queue', `Saving document ${document._id} to queue copies`])
       try {
         writeFileSync(`${DOCUMENT_DIR}/queue/copies/${document._id}.json`, JSON.stringify(document, null, 2))
       } catch (error) {
-        logger('error',  ['queue', `Could not save ${document._id} to copies...`, error.stack])
+        logger('error', ['queue', `Could not save ${document._id} to copies...`, error.stack])
         continue
       }
 
@@ -36,7 +36,7 @@ const getReadyDocuments = async () => {
         try {
           writeFileSync(`${DOCUMENT_DIR}/queue/${newDocument._id}.json`, JSON.stringify(newDocument, null, 2))
         } catch (error) {
-          logger('error',  ['queue', `Could not save ${document._id} to file, moving original to failed and continuing. Will try again next run.`, error.stack])
+          logger('error', ['queue', `Could not save ${document._id} to file, moving original to failed and continuing. Will try again next run.`, error.stack])
           renameSync(`${DOCUMENT_DIR}/queue/${document._id}.json`, `${DOCUMENT_DIR}/queue/failed/${document._id}.json`)
           continue
         }
@@ -44,7 +44,7 @@ const getReadyDocuments = async () => {
         try {
           writeFileSync(`${DOCUMENT_DIR}/queue/copies/${newDocument._id}.json`, JSON.stringify(newDocument, null, 2))
         } catch (error) {
-          logger('error',  ['queue', `Could not save ${newDocument._id} to copies...`, error.stack])
+          logger('error', ['queue', `Could not save ${newDocument._id} to copies...`, error.stack])
           continue
         }
         logger('info', ['queue', `Successfully created and saved ${newDocument._id}"`])
@@ -55,7 +55,7 @@ const getReadyDocuments = async () => {
         // await collection.updateOne({ _id: documents._id }, { $set: { isQueued: false } })
         logger('info', ['queue', `Status for ${document._id} set to not queued in mongodb`])
       } catch (error) {
-        logger('error',  ['queue', `Could set status for ${document._id} to not queued. Moving file to failed folder. Will try again next run.`, error.stack])
+        logger('error', ['queue', `Could set status for ${document._id} to not queued. Moving file to failed folder. Will try again next run.`, error.stack])
         renameSync(`${DOCUMENT_DIR}/queue/${document._id}.json`, `${DOCUMENT_DIR}/queue/failed/${document._id}.json`)
         continue
       }
@@ -64,7 +64,6 @@ const getReadyDocuments = async () => {
     logger('error', ['queue', 'error', error])
   }
 }
-
 
 // Local testing
 (async () => {

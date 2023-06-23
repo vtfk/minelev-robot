@@ -11,7 +11,7 @@ logger('info', ['index', 'start'])
 getNextJobFromQueue() // Just gets a file ready for handling / done
   .then(getFileData) // Just requires the file / done
   .then(decryptData) // Decrypts if necessary / done
-  .then(convertData) // 
+  .then(convertData) //
   .then(decideFlow)
   .then(data => {
     logger('info', ['index', 'finished'])
@@ -38,7 +38,7 @@ const readyForRetry = (file) => {
 
 // Get all documents in queue - try to handle each of them
 const robot = async () => {
-  const readyDocuments = readdirSync(`${DOCUMENT_DIR}/queue`).filter(file => {return file.endsWith('.json') && !file.endsWith('_pdf.json') && readyForRetry(file)})
+  const readyDocuments = readdirSync(`${DOCUMENT_DIR}/queue`).filter(file => { return file.endsWith('.json') && !file.endsWith('_pdf.json') && readyForRetry(file) })
   logger('info', ['saksbehandler', `${readyDocuments.length} documents ready for handling`])
 
   // retry handling here - maybe controlled by filename - makes it more efficient :)
