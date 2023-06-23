@@ -6,16 +6,20 @@ const { renameSync, writeFileSync } = require('fs')
 // Import jobs
 const krr = require('../jobs/krr')
 const freg = require('../jobs/freg')
-const syncElevmappe = require('../jobs/syncElevmappe')
-const syncPrivatePerson = require('../jobs/syncPrivatePerson')
-const syncParents = require('../jobs/syncParents')
-const syncEnterprise = require('../jobs/syncEnterprise')
-const createPdf = require('../jobs/createPdf')
+const syncElevmappe = require('../jobs/sync-elevmappe')
+const syncPrivatePerson = require('../jobs/sync-private-person')
+const addParentsIfUnder18 = require('../jobs/add-parents-if-under-18')
+const syncEnterprise = require('../jobs/sync-enterprise')
+const createPdf = require('../jobs/create-pdf')
+const archive = require('../jobs/archive')
+const svarut = require('../jobs/svarut')
+const getContactTeachers = require('../jobs/get-contact-teachers')
+const sendEmail = require('../jobs/send-email')
 
 /*
 Trenger følgende jobber:
-- krr sjekk (hvilket språk de foretrekker, goddammit...)
-- freg sjekk
+- krr sjekk (hvilket språk de foretrekker, goddammit...) // Done
+- freg sjekk // Done
 -   Kan de over slås sammen i azf-archive mon tro? Njæh, kjør heller krr sjekk manuelt (det er vel bare for foretrukket språk?)
 - sjekk etter adressesperring og pass på at det blir riktig!
 - sjekk om man har en gyldig postadresse / svarut-godkjent (postnr korrekt)
@@ -23,10 +27,11 @@ Trenger følgende jobber:
 - arkiver dokument
 - send ut om det skal sendes ut. (Om det er adressesperring må det gå internt notat til skolen for oppfølging)
 - Send ut varsel på e-post til de som trenger det
+- Oppdater status i mongodb
+- Opprett statistikk i stat-db
+- Fullfør flyten
 - Hold track på flyten, lagre ulike jobber sin status i json-fila. Ta en av gangen, arkiv-endepunktet er så treigt allikevel
-- Hva er greia med yff-tilbakemld?? Ikke sikkert vi trenger gjøre noe annet enn å følge flyten på den altså
 - Om vi har den dataen vi trenger, så blir det jo ikke så galt :D
-
 
 .then(prepareDocument)
       .then(lookupKrr) // Ferdig
@@ -37,7 +42,7 @@ Trenger følgende jobber:
       .then(checkSecretAddress) // Vi har adresser allerede
       .then(gotAddressForDistribution) // Vi har adresser allerede
       .then(setupDocuments) // Vi må nå, lage pdf-er
-      .then(setupArchive)
+      .then(setupArchive) // Done
       .then(saveToDone)
       .then(saveToNotifications)
       .then(saveToArchive)
@@ -123,12 +128,12 @@ const handleDocument = async (document) => {
   } catch (error) {
     throw new Error(`Aiaiai, mangler flow-fil for ${documentData.type}-${documentData.variant}`)
   }
-  
+
   // Set up flowStatus if missing
   if (!documentData.flowStatus) documentData.flowStatus = { runs: 0 }
   // New run, reset failed
   documentData.flowStatus.failed = false
-  
+
   // Check if content is encrypted, and decrypt if necessary
   if (documentData.isEncrypted) {
     logger('info', ['Content is encrypted. Decrypting.'])
@@ -137,17 +142,19 @@ const handleDocument = async (document) => {
     documentData.isEncrypted = false
   }
 
+  // RUN JOBS BASED ON FLOW (Only jobs defined in the flow will actually be run)
+
   // KRR check
   documentData.flowStatus = await runJob(document, flow, 'krr', documentData, krr)
 
   // KRR check
   documentData.flowStatus = await runJob(document, flow, 'freg', documentData, freg)
-  
+
   // SyncElevmappe
   documentData.flowStatus = await runJob(document, flow, 'syncElevmappe', documentData, syncElevmappe)
 
   // SyncParents
-  documentData.flowStatus = await runJob(document, flow, 'syncParents', documentData, syncParents)
+  documentData.flowStatus = await runJob(document, flow, 'addParentsIfUnder18', documentData, addParentsIfUnder18)
 
   // SyncEnterprise
   documentData.flowStatus = await runJob(document, flow, 'syncEnterprise', documentData, syncEnterprise)
@@ -155,9 +162,20 @@ const handleDocument = async (document) => {
   // Create PDF
   documentData.flowStatus = await runJob(document, flow, 'createPdf', documentData, createPdf)
 
+  // Archive document
+  documentData.flowStatus = await runJob(document, flow, 'archive', documentData, archive)
+
+  // Send on Svarut (or creates internal note to school)
+  documentData.flowStatus = await runJob(document, flow, 'svarut', documentData, svarut)
+
+  // Get student's contactTeachers
+  documentData.flowStatus = await runJob(document, flow, 'getContactTeachers', documentData, getContactTeachers)
+
+  // Send emails to receivers
+  documentData.flowStatus = await runJob(document, flow, 'sendEmail', documentData, sendEmail)
+
   // Fail on purpose
   documentData.flowStatus = await runJob(document, flow, 'failOnPurpose', documentData, async () => { throw new Error('Æ feilja med vilje') })
-
 }
 
 module.exports = { handleDocument }
