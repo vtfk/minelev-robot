@@ -30,9 +30,21 @@ module.exports = {
   },
   archive: {
     ARCHIVE_URL: process.env.ARCHIVE_URL || 'arkiv.nononono',
-    ARCHIVE_SUBSCRIPTION_KEY: process.env.ARCHIVE_SUBSCRIPTION_KEY || '1234'
+    ARCHIVE_SUBSCRIPTION_KEY: process.env.ARCHIVE_SUBSCRIPTION_KEY || '1234',
+    ROBOT_RECNO: process.env.ROBOT_RECNO || '200336' // Prod is 200326
   },
   pdf: {
     PDF_URL: process.env.PDF_URL || 'pdf.pdf.pdffffffff'
-  }
+  },
+  mail: {
+    MINELEV_URL: process.env.MINELEV_URL || 'minelev.vtfk.no',
+    MAIL_URL: process.env.MAIL_URL || 'mailmau',
+    MAIL_JWT: process.env.MAIL_SERVICE_JWT || 'mimimi',
+    MAIL_TEMPLATE_NAME: process.env.MAIL_TEMPLATE_NAME || 'tempalate'
+  },
+  pifu: {
+    PIFU_URL: process.env.PIFU_URL || 'pifu.pifu',
+    PIFU_JWT_SECRET: process.env.PIFU_JWT_SECRET || 'secret secret'
+  },
+  SVARUT_EXCEPTIONS: process.env.SVARUT_EXCEPTIONS && process.env.SVARUT_EXCEPTIONS.split(',') || ['12345678910']
 }
