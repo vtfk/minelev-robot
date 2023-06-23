@@ -32,6 +32,14 @@ module.exports = async (jobDef, documentData) => {
   const pdfData = mapper(documentData)
   pdfData.schoolFooter = createSchoolFooter(documentData.school)
 
+  // Check address-block, remove address if exists
+  if (documentData.flowStatus.syncElevmappe.result.privatePerson.addressCode > 0) {
+    logger('info', ['Address code not 0, removing address from pdf'])
+    delete pdfData.recipient.streetAddress
+    delete pdfData.recipient.zipCode
+    delete pdfData.recipient.zipPlace
+  }
+
   const spraak = documentData.flowStatus.krr?.result?.spraak || 'nb'
 
   const payload = {
@@ -45,10 +53,11 @@ module.exports = async (jobDef, documentData) => {
 
   const { data } = await axios.post(`${pdf.PDF_URL}/generate`, payload)
   logger('info', ['createPdf', 'Successfully created pdf, saving to file'])
-  const savePath = `./${DOCUMENT_DIR}/queue/${documentData._id}_pdf.json`
-  writeFileSync(savePath, JSON.stringify({ base64: data.data.base64}, null, 2))
+  const savePath = `./${DOCUMENT_DIR}/queue/${documentData._id}_pdf.txt`
+  writeFileSync(savePath, data.data.base64)
   return {
     msg: 'Successfully saved pdf as base64',
-    path: savePath
+    path: savePath,
+    filename: `${documentData._id}_pdf.txt`
   }
 }
