@@ -26,6 +26,7 @@ module.exports = async (jobDef, documentData) => {
   const archiveData = mapper(documentData)
 
   if (documentData.flowStatus.addParentsIfUnder18 ) { // If addParentsIfUnder18 is there, it means it is enabled
+    if (!documentData.flowStatus?.syncElevmappe?.result?.privatePerson?.ssn) throw new Error('Job "syncElevmappe" must be run to be able to run job "archive"')
     if (hasSvarutException(documentData.flowStatus.syncElevmappe.result.privatePerson.ssn)) {
       logger('info', ['archive', 'student has svarut exception, will not add parents'])
     } else {

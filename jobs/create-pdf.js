@@ -33,6 +33,7 @@ module.exports = async (jobDef, documentData) => {
   pdfData.schoolFooter = createSchoolFooter(documentData.school)
 
   // Check address-block, remove address if exists
+  if (!documentData.flowStatus?.syncElevmappe?.result?.privatePerson?.addressCode) throw new Error('Job "syncElevmappe" must have been run to be able to run job "createPdf"')
   if (documentData.flowStatus.syncElevmappe.result.privatePerson.addressCode > 0) {
     logger('info', ['Address code not 0, removing address from pdf'])
     delete pdfData.recipient.streetAddress

@@ -34,6 +34,7 @@ module.exports = async (jobDef, documentData) => {
   const canSend = canSendOnSvarut(documentData)
   if (canSend.result) {
     logger('info', ['svarut', 'All is good - sending document on Svarut'])
+    if (!documentData.flowStatus?.archive?.result?.DocumentNumber) throw new Error('Job "archive" must have been run to be able to run job "svarut"')
     const payload = {
       service: 'DocumentService',
       method: 'DispatchDocuments',
@@ -51,6 +52,7 @@ module.exports = async (jobDef, documentData) => {
   // Could not send on svarut - find cause and alert school
   // Set document to journalført, add internt notat from template "hemmelig"
   logger('info', ['svarut', 'Could not send document on Svarut. Setting original document to Journalfort and creating internal note.'])
+  if (!documentData.flowStatus?.archive?.result?.DocumentNumber) throw new Error('Job "archive" must have been run to be able to run job "svarut"')
   const payload = {
     service: 'DocumentService',
     method: 'UpdateDocument',
@@ -61,6 +63,8 @@ module.exports = async (jobDef, documentData) => {
   }
   await axios.post(`${archive.ARCHIVE_URL}/archive`, payload, { headers })
   logger('info', ['svarut', 'Successfully set status to Journalfort', documentData.flowStatus.archive.result.DocumentNumber])
+
+  if (!documentData.flowStatus?.syncElevmappe?.result?.elevmappe) throw new Error('Job "syncElevmappe" must have been run to be able to run job "svarut"')
 
   if (canSend.reason === 'addressBlock' || canSend.reason === 'svarut exception' || canSend.reason === 'wrong zipCode') {
     // Create new document in queue with needed data
