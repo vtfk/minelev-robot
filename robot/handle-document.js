@@ -15,6 +15,7 @@ const archive = require('../jobs/archive')
 const svarut = require('../jobs/svarut')
 const getContactTeachers = require('../jobs/get-contact-teachers')
 const sendEmail = require('../jobs/send-email')
+const updateDocumentStatus = require('../jobs/update-document-status')
 
 /*
 Trenger følgende jobber:
@@ -83,6 +84,14 @@ const handleFailedJob = (jobName, documentData, document, error) => {
     } catch (error) {
       logger('error', ['Offh, could not save and move file, stuff might run twice...', `Failed in job: ${jobName}`, 'Probs smart to check it out when you have the time', 'save-error:', error])
     }
+    // Move pdf as well - if it exists
+    if (documentData.flowStatus?.createPdf?.finished) {
+      try {
+        renameSync(`./${DOCUMENT_DIR}/queue/${documentData._id}_pdf.txt`, `./${DOCUMENT_DIR}/failed/${documentData._id}_pdf.txt`)
+      } catch (error) {
+        logger('error', ['Offh, could not move pdf file', 'You have to move it manually, if needed', 'save-error:', error])
+      }
+    }
     return documentData
   }
 
@@ -107,6 +116,7 @@ const runJob = async (document, flow, jobName, documentData, jobFunction) => {
     try {
       documentData.flowStatus[jobName].result = await jobFunction(flow[jobName], documentData)
       documentData.flowStatus[jobName].finished = true
+      documentData.flowStatus[jobName].finishedTimestamp = new Date().getTime()
       logger('info', ['finished job', jobName, 'type', documentData.type, 'variant', documentData.variant, 'student', documentData.student.username])
     } catch (error) {
       documentData.flowStatus.failed = true
@@ -114,6 +124,27 @@ const runJob = async (document, flow, jobName, documentData, jobFunction) => {
     }
   }
   return documentData.flowStatus
+}
+
+const finishFlow = (document, documentData) => {
+  if (!documentData.flowStatus.failed) {
+    logger('info', ['Wohoo, flow has finished, all jobs succeeded. Moving document to finished'])
+    documentData.flowStatus.finished = true
+    try {
+      writeFileSync(`./${DOCUMENT_DIR}/queue/${document}`, JSON.stringify(documentData, null, 2)) // Save status
+      renameSync(`./${DOCUMENT_DIR}/queue/${document}`, `./${DOCUMENT_DIR}/finished/${document}`) // Rename file into finished folder
+    } catch (error) {
+      logger('error', ['Offh, could not save file with new status, stuff might run twice...', `Failed when trying to move file to finished`, 'Probs smart to check it out when you have the time', 'save-error:', error])
+    }
+    // Move pdf as well - if it exists
+    if (documentData.flowStatus?.createPdf?.finished) {
+      try {
+        renameSync(`./${DOCUMENT_DIR}/queue/${documentData._id}_pdf.txt`, `./${DOCUMENT_DIR}/finished/${documentData._id}_pdf.txt`)
+      } catch (error) {
+        logger('error', ['Offh, could not move pdf file', 'You have to move it manually, if needed', 'save-error:', error])
+      }
+    }
+  }
 }
 
 // "document" is the filename
@@ -174,8 +205,18 @@ const handleDocument = async (document) => {
   // Send emails to receivers
   documentData.flowStatus = await runJob(document, flow, 'sendEmail', documentData, sendEmail)
 
+  // Update document status
+  documentData.flowStatus = await runJob(document, flow, 'updateDocumentStatus', documentData, updateDocumentStatus)
+
+  // Set flowStatus to finished if everything is good
+  documentData.flowStatus = await runJob(document, flow, 'finishFlow', documentData, finishFlow)
+
   // Fail on purpose
   documentData.flowStatus = await runJob(document, flow, 'failOnPurpose', documentData, async () => { throw new Error('Æ feilja med vilje') })
+
+  // Finish flow (will move file to finished - if everything is done)
+  finishFlow(document, documentData)
+
 }
 
 module.exports = { handleDocument }
