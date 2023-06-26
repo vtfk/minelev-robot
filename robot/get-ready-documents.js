@@ -22,7 +22,7 @@ const getReadyDocuments = async () => {
       }
       logger('info', ['queue', `Saving document ${document._id} to queue copies`])
       try {
-        writeFileSync(`${DOCUMENT_DIR}/queue/copies/${document._id}.json`, JSON.stringify(document, null, 2))
+        writeFileSync(`${DOCUMENT_DIR}/copies/${document._id}.json`, JSON.stringify(document, null, 2))
       } catch (error) {
         logger('error', ['queue', `Could not save ${document._id} to copies...`, error.stack])
         continue
@@ -42,7 +42,7 @@ const getReadyDocuments = async () => {
         }
         logger('info', ['queue', `Saving document ${newDocument._id} to queue copies`])
         try {
-          writeFileSync(`${DOCUMENT_DIR}/queue/copies/${newDocument._id}.json`, JSON.stringify(newDocument, null, 2))
+          writeFileSync(`${DOCUMENT_DIR}/copies/${newDocument._id}.json`, JSON.stringify(newDocument, null, 2))
         } catch (error) {
           logger('error', ['queue', `Could not save ${newDocument._id} to copies...`, error.stack])
           continue
@@ -52,7 +52,7 @@ const getReadyDocuments = async () => {
 
       logger('info', ['queue', `Setting status for ${document._id} to not queued in mongodb`])
       try {
-        // await collection.updateOne({ _id: documents._id }, { $set: { isQueued: false } })
+        // await collection.updateOne({ _id: documents._id }, { $set: { isQueued: false } }) // HUSK Å SKRU PÅ DENNE ETTERHVERT
         logger('info', ['queue', `Status for ${document._id} set to not queued in mongodb`])
       } catch (error) {
         logger('error', ['queue', `Could set status for ${document._id} to not queued. Moving file to failed folder. Will try again next run.`, error.stack])
@@ -66,8 +66,10 @@ const getReadyDocuments = async () => {
 }
 
 // Local testing
+/*
 (async () => {
   await getReadyDocuments()
 })()
+*/
 
 module.exports = { getReadyDocuments }
