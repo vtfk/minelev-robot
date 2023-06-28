@@ -11,7 +11,7 @@ module.exports = async (jobDef, documentData) => {
   logger('info', ['sendMail', 'Mapper is defined in options. Will use it.'])
 
   const mailData = mapper(documentData)
-  
+
   const mailToken = generateJwt(mail.MAIL_JWT)
 
   const mailPayloads = Array.isArray(mailData) ? mailData : [mailData]
@@ -22,6 +22,6 @@ module.exports = async (jobDef, documentData) => {
     await axios.post(mail.MAIL_URL, mailPayload, { headers: { Authorization: `Bearer ${mailToken}` } })
     logger('info', ['sendMail', `Sent mail to ${mailPayload.to.length} recipients`])
   }
-  
+
   return `Sent ${mailPayloads.length} mails. Receivers: ${mailPayloads.map(m => m.to.join(', ')).join(', ')}`
 }
