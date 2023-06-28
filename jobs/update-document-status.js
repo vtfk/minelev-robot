@@ -16,6 +16,7 @@ Samtale
 ikke-samtale
   queued (er der fra før av)
   archived (når dokumentet er arkivert)
+  sent (svarut)
 
 Varsel fag og orden
   queued (er der fra før av)
@@ -60,7 +61,7 @@ module.exports = async (jobDef, documentData) => {
   const mongoClient = await connect()
   const collection = mongoClient.db(mongodb.MONGODB_DB).collection(mongodb.MONGODB_COLLECTION)
   // Sjekk om det er en bekreftelse_bedrift - i så fall skal det dyttes til originaldokumentet i mongodb, og ikke {_id}_bekreftelse (altså bare til ${_id})
-  const result = await collection.updateOne({ _id: new ObjectId(documentData._id.replace('_bekreftelse', '')) },  { $push: { status: { $each: statuses } } }) // Lagre timestamp for fullførte jobber? Lagre alle statuser på en gang like greit?? Neh, vi gjør det, det var lett
+  const result = await collection.updateOne({ _id: new ObjectId(documentData._id.replace('_bekreftelse', '')) }, { $push: { status: { $each: statuses } } }) // Lagre timestamp for fullførte jobber? Lagre alle statuser på en gang like greit?? Neh, vi gjør det, det var lett
   if (result.matchedCount !== 1) throw new Error('OIOIOI, her var det ikke match på et entydig document i MongoDB - ta en sjekk')
   logger('info', ['updateDocumentStatus', 'Status successfully set'])
   return result
