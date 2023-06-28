@@ -46,5 +46,9 @@ module.exports = {
     PIFU_URL: process.env.PIFU_URL || 'pifu.pifu',
     PIFU_JWT_SECRET: process.env.PIFU_JWT_SECRET || 'secret secret'
   },
-  SVARUT_EXCEPTIONS: process.env.SVARUT_EXCEPTIONS && process.env.SVARUT_EXCEPTIONS.split(',') || ['12345678910']
+  statistics: {
+    STATISTICS_URL: process.env.STATISTICS_URL,
+    STATISTICS_SUBSCRIPTION_KEY: process.env.STATISTICS_SUBSCRIPTION_KEY
+  },
+  SVARUT_EXCEPTIONS: (process.env.SVARUT_EXCEPTIONS && process.env.SVARUT_EXCEPTIONS.split(',')) || ['12345678910']
 }
