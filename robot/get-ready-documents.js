@@ -8,9 +8,8 @@ const getReadyDocuments = async () => {
     const mongoClient = await connect()
     logger('info', ['queue', 'get next document in queue'])
     const collection = mongoClient.db(mongodb.MONGODB_DB).collection(mongodb.MONGODB_COLLECTION)
-    // const documents = await collection.find({ isQueued: true }).sort({ timestamp: 1 }).limit(DOCUMENTS_PER_RUN).toArray()
     const documents = await collection.find({ isQueued: true }).sort({ timestamp: 1 }).limit(DOCUMENTS_PER_RUN).toArray()
-    logger('info', ['queue', `got ${documents.length} documents from queue, saving to files`])
+    logger('info', ['queue', `got ${documents.length} documents from queue`, documents.length === 0 ? 'No new documents' : 'Saving documents to local files'])
 
     for (const document of documents) {
       logger('info', ['queue', `Saving document ${document._id} to queue dir`])
@@ -52,7 +51,7 @@ const getReadyDocuments = async () => {
 
       logger('info', ['queue', `Setting status for ${document._id} to not queued in mongodb`])
       try {
-        // await collection.updateOne({ _id: documents._id }, { $set: { isQueued: false } }) // HUSK Å SKRU PÅ DENNE ETTERHVERT
+        await collection.updateOne({ _id: document._id }, { $set: { isQueued: false } })
         logger('info', ['queue', `Status for ${document._id} set to not queued in mongodb`])
       } catch (error) {
         logger('error', ['queue', `Could set status for ${document._id} to not queued. Moving file to failed folder. Will try again next run.`, error.stack])
