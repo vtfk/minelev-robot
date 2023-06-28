@@ -13,19 +13,20 @@ module.exports = async (jobDef, documentData) => {
   const parents = documentData.flowStatus.freg.result.foreldreansvar
 
   if (documentData.flowStatus.freg.result.alder >= 18) {
-    logger('info', 'Student is over 18, will not sync parents')
+    logger('info', ['addParentsIfUnder18', 'Student is over 18, will not sync parents'])
     return []
   }
 
   if (parents.length === 0) {
-    logger('info', 'No parents registered on student, cannot sync parents when they do not exist...')
+    logger('info', ['addParentsIfUnder18', 'No parents registered on student, cannot sync parents when they do not exist...'])
     return []
   }
+  logger('info', ['addParentsIfUnder18', `Student is under 18, and have ${parents.length} parents registered. Will sync parents in archive`])
   const result = []
   const parentsToSync = []
   for (const parent of parents) {
     if (!parent.ansvarlig) throw new Error('Parent object does not have ansvarlig ssn on it - something is wrong')
-    if (!parentsToSync.includes(parent.ansvarlig)) parentsToSync.push(parent.ansvarlig) // Add parents ssn to list parentsToSync (to not get duplicates, just in case)
+    if (!parentsToSync.includes(parent.ansvarlig) && parent.ansvarlig.length === 11 && !isNaN(parent.ansvarlig)) parentsToSync.push(parent.ansvarlig) // Check that ansvarlig is "ssn", can be "ukjent" Add parents ssn to list parentsToSync (to not get duplicates, just in case)
   }
 
   // Run syncPrivatePerson on each parent
@@ -38,6 +39,7 @@ module.exports = async (jobDef, documentData) => {
     const { data } = await axios.post(`${archive.ARCHIVE_URL}/SyncPrivatePerson`, { ssn: parentSsn }, { headers })
     result.push(data)
   }
+  logger('info', ['addParentsIfUnder18', `Successfully synced ${parentsToSync.length} parents.`])
 
   return result
 }
