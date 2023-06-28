@@ -3,6 +3,7 @@ const { pdf, DOCUMENT_DIR } = require('../config')
 const { logger } = require('@vtfk/logger')
 const getSchool = require('vtfk-schools-info')
 const { writeFileSync } = require('fs')
+const hasSvarutException = require('../lib/has-svarut-exception')
 
 const createSchoolFooter = (school) => {
   if (school && school.id) {
@@ -32,13 +33,20 @@ module.exports = async (jobDef, documentData) => {
   const pdfData = mapper(documentData)
   pdfData.schoolFooter = createSchoolFooter(documentData.school)
 
-  // Check address-block, remove address if exists
-  if (!documentData.flowStatus?.syncElevmappe?.result?.privatePerson?.addressCode) throw new Error('Job "syncElevmappe" must have been run to be able to run job "createPdf"')
-  if (documentData.flowStatus.syncElevmappe.result.privatePerson.addressCode > 0) {
-    logger('info', ['Address code not 0, removing address from pdf'])
-    delete pdfData.recipient.streetAddress
-    delete pdfData.recipient.zipCode
-    delete pdfData.recipient.zipPlace
+  // Check address-block and exception, remove address if exists
+  if (documentData.flowStatus?.syncElevmappe?.result) {
+    if (documentData.flowStatus.syncElevmappe.result.privatePerson.addressCode > 0) {
+      logger('info', ['createPdf', 'Address code not 0, removing address from pdf'])
+      delete pdfData.recipient?.streetAddress
+      delete pdfData.recipient?.zipCode
+      delete pdfData.recipient?.zipPlace
+    }
+    if (hasSvarutException(documentData.flowStatus.syncElevmappe.result.privatePerson.ssn)) {
+      logger('info', ['createPdf', 'Has svarut-exception, removing address from pdf'])
+      delete pdfData.recipient?.streetAddress
+      delete pdfData.recipient?.zipCode
+      delete pdfData.recipient?.zipPlace
+    }
   }
 
   const spraak = documentData.flowStatus.krr?.result?.spraak || 'nb'
