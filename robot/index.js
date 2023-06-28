@@ -1,30 +1,5 @@
-/*
-const getNextJobFromQueue = require('./lib/steps/get-next-job-from-queue')
-const getFileData = require('./lib/steps/get-file-data')
-const decryptData = require('./lib/steps/decrypt-data')
-const convertData = require('./lib/steps/convert-document')
-const decideFlow = require('./lib/steps/decide-flow')
-const { logger } = require('@vtfk/logger')
-
-logger('info', ['index', 'start'])
-
-getNextJobFromQueue() // Just gets a file ready for handling / done
-  .then(getFileData) // Just requires the file / done
-  .then(decryptData) // Decrypts if necessary / done
-  .then(convertData) //
-  .then(decideFlow)
-  .then(data => {
-    logger('info', ['index', 'finished'])
-    process.exit(0)
-  })
-  .catch(error => {
-    logger('error', ['index', 'error', error])
-    process.exit(1)
-  })
-
-*/
 const { readdirSync } = require('fs')
-const { DOCUMENT_DIR, RETRY_INTERVAL_MINUTES } = require('../config')
+const { DOCUMENT_DIR } = require('../config')
 const { logger, logConfig } = require('@vtfk/logger')
 const { handleDocument } = require('./handle-document')
 
