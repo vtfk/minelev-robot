@@ -7,7 +7,6 @@ const { renameSync, writeFileSync } = require('fs')
 const krr = require('../jobs/krr')
 const freg = require('../jobs/freg')
 const syncElevmappe = require('../jobs/sync-elevmappe')
-const syncPrivatePerson = require('../jobs/sync-private-person')
 const addParentsIfUnder18 = require('../jobs/add-parents-if-under-18')
 const syncEnterprise = require('../jobs/sync-enterprise')
 const createPdf = require('../jobs/create-pdf')
@@ -16,6 +15,7 @@ const svarut = require('../jobs/svarut')
 const getContactTeachers = require('../jobs/get-contact-teachers')
 const sendEmail = require('../jobs/send-email')
 const updateDocumentStatus = require('../jobs/update-document-status')
+const statistics = require('../jobs/statistics')
 
 /*
 Trenger følgende jobber:
@@ -112,12 +112,12 @@ const handleFailedJob = (jobName, documentData, document, error) => {
 const runJob = async (document, flow, jobName, documentData, jobFunction) => {
   documentData.flowStatus = setUpJob(flow, jobName, documentData)
   if (shouldRunJob(flow, jobName, documentData)) {
-    logger('info', ['running job', jobName, 'type', documentData.type, 'variant', documentData.variant, 'student', documentData.student.username])
+    logger('info', ['running job', jobName, 'student', documentData.student.username])
     try {
       documentData.flowStatus[jobName].result = await jobFunction(flow[jobName], documentData)
       documentData.flowStatus[jobName].finished = true
       documentData.flowStatus[jobName].finishedTimestamp = new Date().getTime()
-      logger('info', ['finished job', jobName, 'type', documentData.type, 'variant', documentData.variant, 'student', documentData.student.username])
+      logger('info', ['finished job', jobName, 'student', documentData.student.username])
     } catch (error) {
       documentData.flowStatus.failed = true
       handleFailedJob(jobName, documentData, document, error)
@@ -134,7 +134,7 @@ const finishFlow = (document, documentData) => {
       writeFileSync(`./${DOCUMENT_DIR}/queue/${document}`, JSON.stringify(documentData, null, 2)) // Save status
       renameSync(`./${DOCUMENT_DIR}/queue/${document}`, `./${DOCUMENT_DIR}/finished/${document}`) // Rename file into finished folder
     } catch (error) {
-      logger('error', ['Offh, could not save file with new status, stuff might run twice...', `Failed when trying to move file to finished`, 'Probs smart to check it out when you have the time', 'save-error:', error])
+      logger('error', ['Offh, could not save file with new status, stuff might run twice...', 'Failed when trying to move file to finished', 'Probs smart to check it out when you have the time', 'save-error:', error])
     }
     // Move pdf as well - if it exists
     if (documentData.flowStatus?.createPdf?.finished) {
@@ -150,7 +150,7 @@ const finishFlow = (document, documentData) => {
 // "document" is the filename
 const handleDocument = async (document) => {
   const documentData = require(`../${DOCUMENT_DIR}/queue/${document}`)
-  logConfig({ prefix: `handle-document - ${documentData._id}` })
+  logConfig({ prefix: `handle-document - ${documentData._id} - ${documentData.type} - ${documentData.variant}` })
 
   // Get flow for document
   let flow
@@ -208,6 +208,9 @@ const handleDocument = async (document) => {
   // Update document status
   documentData.flowStatus = await runJob(document, flow, 'updateDocumentStatus', documentData, updateDocumentStatus)
 
+  // Update document status
+  documentData.flowStatus = await runJob(document, flow, 'statistics', documentData, statistics)
+
   // Set flowStatus to finished if everything is good
   documentData.flowStatus = await runJob(document, flow, 'finishFlow', documentData, finishFlow)
 
@@ -216,7 +219,6 @@ const handleDocument = async (document) => {
 
   // Finish flow (will move file to finished - if everything is done)
   finishFlow(document, documentData)
-
 }
 
 module.exports = { handleDocument }
