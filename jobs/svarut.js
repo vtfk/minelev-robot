@@ -8,17 +8,12 @@ const { writeFileSync } = require('fs')
 /*
 - Hvis eleven er under 18, og minst en forelder er funnet, og ingen adressegraderinger  send ut
 - Hvis eleven er over 18, og ingen adressegradering send ut
-- Hvis eleven er under 18, og vi ikke har noen foreldre, opprett intern notat og si fra til skolen at de må disturbere manuelt
+- Hvis eleven er under 18, og vi ikke har noen foreldre, opprett intern notat og si fra til skolen at de må distribuere manuelt
 - Hvis eleven eller foresatte har adresseperring, opprett internt notat og si fra til skolen at de må distribuere manuelt
 - Hvis noen har en postadresse som ikke har 4 siffer i postnummer, opprett intertn notat og si fra til skolen at de må distribuere manuelt
 - Hvis eleven finnes i unntaksregisteret (lokalt her), opprett internt og si fra til skolen at de må blabal
 
 */
-
-const hasParents = (parents) => {
-  if (parents.length > 0) return true
-  return false
-}
 
 module.exports = async (jobDef, documentData) => {
   const headers = {
@@ -68,7 +63,7 @@ module.exports = async (jobDef, documentData) => {
 
   if (canSend.reason === 'addressBlock' || canSend.reason === 'svarut exception' || canSend.reason === 'wrong zipCode') {
     // Create new document in queue with needed data
-    logger('info', ['svarut', 'creating new document in queue for internal note "hemmelig" handling'])
+    logger('info', ['svarut', 'creating new document in queue for internal note "address" handling'])
     const secretDocument = {
       _id: `${documentData._id}_hemmelig`,
       created: documentData.created,
@@ -85,7 +80,7 @@ module.exports = async (jobDef, documentData) => {
     writeFileSync(filepath, JSON.stringify(secretDocument, null, 2))
     return { reason: canSend.reason, filepath }
   }
-  
+
   if (canSend.reason === 'parents not found') {
     logger('info', ['svarut', 'creating new document in queue for internal note "foresatte" handling'])
     const parentDocument = {
@@ -106,5 +101,4 @@ module.exports = async (jobDef, documentData) => {
   }
 
   throw new Error(`Can send reason "${canSend.reason}" cannot be handled...`)
-
 }
