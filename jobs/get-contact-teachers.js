@@ -1,4 +1,4 @@
-const { pifu} = require('../config')
+const { pifu } = require('../config')
 const generateJwt = require('../lib/generate-jwt')
 const axios = require('axios').default
 const { logger } = require('@vtfk/logger')
