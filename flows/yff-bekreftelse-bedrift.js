@@ -1,4 +1,4 @@
-const description = 'Oppretter, arkiverer, og sender et tilbakemeldingsskjema for en elevs utplassering i bedrift. Sendes svarut til eleven.'
+const description = 'Oppretter, arkiverer, og sender en bekreftelse på utplassering for en elevs utplassering i bedrift. Sendes svarut til bedriften. Samt kopi på e-post til kopimottakere'
 const getSchoolData = require('../lib/get-school-data')
 const { archive: { ROBOT_RECNO } } = require('../config')
 const { readFileSync } = require('fs')
@@ -37,37 +37,31 @@ module.exports = {
   },
   syncEnterprise: {
     // Trengs kun hvis bedriften skal ha dokumentet på svarut
-    enabled: false,
+    enabled: true,
     mapper: (documentData) => {
       return {
-        enterpriseNumber: documentData.content.utplassering.bedriftsData.organisasjonsNummer
+        enterpriseNumber: documentData.content.bekreftelse.bedriftsData.organisasjonsNummer
       }
     }
   },
   createPdf: {
     enabled: true,
     mapper: (documentData) => {
-      const privatePerson = documentData.flowStatus.syncElevmappe.result.privatePerson
+      const enterprise = documentData.flowStatus.syncEnterprise.result.result.enterprise
+      if (!enterprise?.PostAddress?.StreetAddress) throw new Error('Could not get PostAddress from syncEnterprise job - please check enterprise')
       return {
         recipient: {
-          fullname: documentData.student.name,
-          streetAddress: privatePerson.streetAddress,
-          zipCode: privatePerson.zipCode,
-          zipPlace: privatePerson.zipPlace
+          navn: enterprise.Name,
+          adresse: enterprise.PostAddress.StreetAddress,
+          postnummer: enterprise.PostAddress.ZipCode,
+          poststed: enterprise.PostAddress.ZipPlace
         },
-        student: {
-          name: documentData.student.name,
-          level: documentData.student.level
-        },
+        student: documentData.student,
         created: {
           timestamp: documentData.created.timestamp
         },
-        school: {
-          name: documentData.school.name
-        },
-        teacher: {
-          name: documentData.teacher.name
-        },
+        school: documentData.school,
+        teacher: documentData.teacher,
         content: documentData.content
       }
     }
@@ -79,22 +73,20 @@ module.exports = {
       "base64": "fhdjfhdjkfjsdf",
       "title": "dokument",
       "unofficialTitle": "dokument huhuhu",
-      "ssn": "12345678910",
+      "organizationNumber": "12345678910",
       "documentDate": "2021-09-27",
       "caseNumber": "30/00000",
       "schoolEnterpriseNumber": "202002",
       "accessGroup": "elev belev",
       "responsiblePersonRecno": "12345"
       */
-      const privatePerson = documentData.flowStatus.syncElevmappe.result.privatePerson
-      if (!privatePerson || !privatePerson.ssn) throw new Error('Missing data from job "syncElevmappe", please verify that the job has run successfully')
       const schoolYear = documentData.content.year
       if (!schoolYear) throw new Error('Missing property "year" from documentData.content, please check.')
       const schoolData = getSchoolData(documentData.school.id)
       return {
-        title: 'Tilbakemeldingsskjema - arbeidspraksis - yrkesfaglig fordypning - YFF',
-        unofficialTitle: `Tilbakemeldingsskjema - arbeidspraksis - yrkesfaglig fordypning - YFF - ${documentData.student.name} - ${schoolData.fullName} - ${schoolYear}`,
-        ssn: privatePerson.ssn,
+        title: 'Bekreftelse til bedrift - yrkesfaglig fordypning - YFF',
+        unofficialTitle: `Bekreftelse til bedrift - yrkesfaglig fordypning - YFF - ${documentData.student.name} - ${schoolData.fullName} - ${schoolYear}`,
+        organizationNumber: documentData.content.bekreftelse.bedriftsData.organisasjonsNummer,
         documentDate: new Date(documentData.created.timestamp).toISOString(),
         caseNumber: documentData.flowStatus.syncElevmappe.result.elevmappe.CaseNumber,
         schoolEnterpriseNumber: schoolData.organizationNumber,
@@ -111,24 +103,32 @@ module.exports = {
     enabled: false
   },
   sendEmail: {
-    // Det er KUN yff-bekreftelse-bedrift som skal ha e-post varsling ut til bedriften :)
-    enabled: false,
+    // Det er KUN yff-bekreftelse-bedrift som skal ha e-post varsling ut til bedriften :) Her er den altså på
+    enabled: true,
     mapper: (documentData) => {
-      const mailText = 'Hei!<br/><br/>Her kommer en teste-epost'
-      const receivers = ['tullball@vtfk.no']
+      const mailText = 'Hei!<br/><br/>Vedlagt oversendes bekreftelse på utplassering av elev i YFF.<br />'
+      const receivers = documentData.content.bekreftelse.kopiPrEpost
       const mails = []
       for (const receiver of receivers) {
         mails.push({
           to: [receiver],
           from: 'MinElev <minelev@vtfk.no>',
-          subject: 'Tester en e-post fra MinElev',
+          subject: 'Bekreftelse om utplassering av elev',
+          attachments: [
+            {
+              content: readFileSync(documentData.flowStatus.createPdf.result.path, 'utf-8'),
+              filename: 'Bekreftelse-utplassering.pdf',
+              type: 'application/pdf'
+            }
+          ],
           template: {
             templateName: 'vtfk',
             templateData: {
               body: mailText,
               signature: {
-                name: 'MinElev',
-                company: 'Opplæring og folkehelse'
+                name: documentData.teacher.name,
+                company: documentData.school.name,
+                virksomhet: true
               }
             }
           }
@@ -145,7 +145,7 @@ module.exports = {
     mapper: (documentData) => {
       return {
         description,
-        bedrift: documentData.content.utplassering.bedriftsNavn
+        bedrift: documentData.content.bekreftelse.bedriftsNavn
       }
     }
   },

@@ -1,4 +1,5 @@
-const description = 'Oppretter, arkiverer, og sender et tilbakemeldingsskjema for en elevs utplassering i bedrift. Sendes svarut til eleven.'
+// testet og fornøyd
+const description = 'Oppretter og arkiverer et notat om at det er gjennomført en elevsamtale fra MinElev i elevmappen.'
 const getSchoolData = require('../lib/get-school-data')
 const { archive: { ROBOT_RECNO } } = require('../config')
 const { readFileSync } = require('fs')
@@ -6,8 +7,8 @@ const { readFileSync } = require('fs')
 module.exports = {
   enabled: true,
   krr: {
-    // Trenger denne for foretrukket språk på pdf
-    enabled: true,
+    // Trenger ikke denne for samtale - bruker kun sprak nb
+    enabled: false,
     mapper: (documentData) => {
       return {
         ssn: documentData.student.personalIdNumber
@@ -55,20 +56,12 @@ module.exports = {
           zipCode: privatePerson.zipCode,
           zipPlace: privatePerson.zipPlace
         },
-        student: {
-          name: documentData.student.name,
-          level: documentData.student.level
-        },
+        student: documentData.student,
         created: {
           timestamp: documentData.created.timestamp
         },
-        school: {
-          name: documentData.school.name
-        },
-        teacher: {
-          name: documentData.teacher.name
-        },
-        content: documentData.content
+        school: documentData.school,
+        teacher: documentData.teacher
       }
     }
   },
@@ -79,22 +72,20 @@ module.exports = {
       "base64": "fhdjfhdjkfjsdf",
       "title": "dokument",
       "unofficialTitle": "dokument huhuhu",
-      "ssn": "12345678910",
       "documentDate": "2021-09-27",
       "caseNumber": "30/00000",
       "schoolEnterpriseNumber": "202002",
       "accessGroup": "elev belev",
       "responsiblePersonRecno": "12345"
       */
-      const privatePerson = documentData.flowStatus.syncElevmappe.result.privatePerson
-      if (!privatePerson || !privatePerson.ssn) throw new Error('Missing data from job "syncElevmappe", please verify that the job has run successfully')
-      const schoolYear = documentData.content.year
-      if (!schoolYear) throw new Error('Missing property "year" from documentData.content, please check.')
+      const datePadding = (date) => date.toString().length === 1 ? `0${date.toString()}` : date.toString()
+      const formatDate = (date) => { return `${datePadding(date.getDate())}.${datePadding(date.getMonth() + 1)}.${date.getFullYear()}` }
       const schoolData = getSchoolData(documentData.school.id)
+      const prettyDate = formatDate(new Date(documentData.created.timestamp))
       return {
-        title: 'Tilbakemeldingsskjema - arbeidspraksis - yrkesfaglig fordypning - YFF',
-        unofficialTitle: `Tilbakemeldingsskjema - arbeidspraksis - yrkesfaglig fordypning - YFF - ${documentData.student.name} - ${schoolData.fullName} - ${schoolYear}`,
-        ssn: privatePerson.ssn,
+        title: `Elevsamtale - gjennomført - ${prettyDate} - ${documentData.student.classId}`,
+        unofficialTitle: `Elevsamtale - gjennomført - ${documentData.student.name} - ${prettyDate} - ${documentData.student.classId}`,
+        fileTitle: `Elevsamtale - gjennomført - ${prettyDate} - ${documentData.student.classId.replaceAll(':', '')}`,
         documentDate: new Date(documentData.created.timestamp).toISOString(),
         caseNumber: documentData.flowStatus.syncElevmappe.result.elevmappe.CaseNumber,
         schoolEnterpriseNumber: schoolData.organizationNumber,
@@ -105,7 +96,7 @@ module.exports = {
     }
   },
   svarut: {
-    enabled: true
+    enabled: false
   },
   getContactTeachers: {
     enabled: false
@@ -144,8 +135,7 @@ module.exports = {
     enabled: true,
     mapper: (documentData) => {
       return {
-        description,
-        bedrift: documentData.content.utplassering.bedriftsNavn
+        description
       }
     }
   },

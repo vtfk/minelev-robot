@@ -1,4 +1,4 @@
-const description = 'Oppretter, arkiverer, og sender et tilbakemeldingsskjema for en elevs utplassering i bedrift. Sendes svarut til eleven.'
+const description = 'Oppretter, arkiverer, og sender en YFF lokal læreplan for en elevs utplasseringer i bedrifter. Sendes svarut til eleven.'
 const getSchoolData = require('../lib/get-school-data')
 const { archive: { ROBOT_RECNO } } = require('../config')
 const { readFileSync } = require('fs')
@@ -55,19 +55,12 @@ module.exports = {
           zipCode: privatePerson.zipCode,
           zipPlace: privatePerson.zipPlace
         },
-        student: {
-          name: documentData.student.name,
-          level: documentData.student.level
-        },
+        student: documentData.student,
         created: {
           timestamp: documentData.created.timestamp
         },
-        school: {
-          name: documentData.school.name
-        },
-        teacher: {
-          name: documentData.teacher.name
-        },
+        school: documentData.school,
+        teacher: documentData.teacher,
         content: documentData.content
       }
     }
@@ -92,8 +85,8 @@ module.exports = {
       if (!schoolYear) throw new Error('Missing property "year" from documentData.content, please check.')
       const schoolData = getSchoolData(documentData.school.id)
       return {
-        title: 'Tilbakemeldingsskjema - arbeidspraksis - yrkesfaglig fordypning - YFF',
-        unofficialTitle: `Tilbakemeldingsskjema - arbeidspraksis - yrkesfaglig fordypning - YFF - ${documentData.student.name} - ${schoolData.fullName} - ${schoolYear}`,
+        title: 'Elevens lokale læreplan - yrkesfaglig fordypning - YFF',
+        unofficialTitle: `Elevens lokale læreplan - yrkesfaglig fordypning - YFF - ${documentData.student.name} - ${schoolData.fullName} - ${schoolYear}`,
         ssn: privatePerson.ssn,
         documentDate: new Date(documentData.created.timestamp).toISOString(),
         caseNumber: documentData.flowStatus.syncElevmappe.result.elevmappe.CaseNumber,
@@ -111,7 +104,7 @@ module.exports = {
     enabled: false
   },
   sendEmail: {
-    // Det er KUN yff-bekreftelse-bedrift som skal ha e-post varsling ut til bedriften :)
+    // Det er KUN yff-bekreftelse-bedrift som skal ha e-post varsling ut til bedriften :) Varsel skal sendes kontaktlærer
     enabled: false,
     mapper: (documentData) => {
       const mailText = 'Hei!<br/><br/>Her kommer en teste-epost'
@@ -145,7 +138,7 @@ module.exports = {
     mapper: (documentData) => {
       return {
         description,
-        bedrift: documentData.content.utplassering.bedriftsNavn
+        bedrifter: documentData.content.utplasseringer.map(u => u.name).join(', ')
       }
     }
   },

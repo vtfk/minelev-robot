@@ -1,4 +1,5 @@
-const description = 'Oppretter, arkiverer, og sender et tilbakemeldingsskjema for en elevs utplassering i bedrift. Sendes svarut til eleven.'
+// Testet ok
+const description = 'Oppretter, arkiverer, og sender en bekreftelse på at eleven ikke ønsker elevsamtale. Sendes svarut til eleven.'
 const getSchoolData = require('../lib/get-school-data')
 const { archive: { ROBOT_RECNO } } = require('../config')
 const { readFileSync } = require('fs')
@@ -55,20 +56,12 @@ module.exports = {
           zipCode: privatePerson.zipCode,
           zipPlace: privatePerson.zipPlace
         },
-        student: {
-          name: documentData.student.name,
-          level: documentData.student.level
-        },
+        student: documentData.student,
         created: {
           timestamp: documentData.created.timestamp
         },
-        school: {
-          name: documentData.school.name
-        },
-        teacher: {
-          name: documentData.teacher.name
-        },
-        content: documentData.content
+        school: documentData.school,
+        teacher: documentData.teacher
       }
     }
   },
@@ -88,12 +81,14 @@ module.exports = {
       */
       const privatePerson = documentData.flowStatus.syncElevmappe.result.privatePerson
       if (!privatePerson || !privatePerson.ssn) throw new Error('Missing data from job "syncElevmappe", please verify that the job has run successfully')
-      const schoolYear = documentData.content.year
-      if (!schoolYear) throw new Error('Missing property "year" from documentData.content, please check.')
+      const datePadding = (date) => date.toString().length === 1 ? `0${date.toString()}` : date.toString()
+      const formatDate = (date) => { return `${datePadding(date.getDate())}.${datePadding(date.getMonth() + 1)}.${date.getFullYear()}` }
       const schoolData = getSchoolData(documentData.school.id)
+      const prettyDate = formatDate(new Date(documentData.created.timestamp))
       return {
-        title: 'Tilbakemeldingsskjema - arbeidspraksis - yrkesfaglig fordypning - YFF',
-        unofficialTitle: `Tilbakemeldingsskjema - arbeidspraksis - yrkesfaglig fordypning - YFF - ${documentData.student.name} - ${schoolData.fullName} - ${schoolYear}`,
+        title: `Elevsamtale - ikke ønsket - ${prettyDate} - ${documentData.student.classId}`,
+        unofficialTitle: `Elevsamtale - ikke ønsket - ${documentData.student.name} - ${prettyDate} - ${documentData.student.classId}`,
+        fileTitle: `Elevsamtale - ikke ønsket - ${prettyDate} - ${documentData.student.classId.replaceAll(':', '')}`,
         ssn: privatePerson.ssn,
         documentDate: new Date(documentData.created.timestamp).toISOString(),
         caseNumber: documentData.flowStatus.syncElevmappe.result.elevmappe.CaseNumber,
@@ -144,8 +139,7 @@ module.exports = {
     enabled: true,
     mapper: (documentData) => {
       return {
-        description,
-        bedrift: documentData.content.utplassering.bedriftsNavn
+        description
       }
     }
   },

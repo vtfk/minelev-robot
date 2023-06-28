@@ -1,7 +1,8 @@
-const description = 'Oppretter, arkiverer, og sender et tilbakemeldingsskjema for en elevs utplassering i bedrift. Sendes svarut til eleven.'
+const description = 'Oppretter, arkiverer, og sender et varsel i orden. Sendes svarut til eleven, og foresatte dersom under 18. E-post på kopi til kontaktlærere'
 const getSchoolData = require('../lib/get-school-data')
 const { archive: { ROBOT_RECNO } } = require('../config')
 const { readFileSync } = require('fs')
+const mailContactTeachers = require('../shared-mappers/mail-contact-teachers')
 
 module.exports = {
   enabled: true,
@@ -15,8 +16,8 @@ module.exports = {
     }
   },
   freg: {
-    // Vi trenger ikke freg her - brukes for å hente foreldreansvar når vi sender ut til foreldre og, det gjør vi ikke med yff-tilbakemelding
-    enabled: false,
+    // Vi trenger ikke freg her - brukes for å hente foreldre
+    enabled: true,
     mapper: (documentData) => {
       return {
         ssn: documentData.student.personalIdNumber
@@ -33,7 +34,7 @@ module.exports = {
     }
   },
   addParentsIfUnder18: {
-    enabled: false // Kun varsel som har dette
+    enabled: true // Kun varsel som har dette
   },
   syncEnterprise: {
     // Trengs kun hvis bedriften skal ha dokumentet på svarut
@@ -55,19 +56,12 @@ module.exports = {
           zipCode: privatePerson.zipCode,
           zipPlace: privatePerson.zipPlace
         },
-        student: {
-          name: documentData.student.name,
-          level: documentData.student.level
-        },
+        student: documentData.student,
         created: {
           timestamp: documentData.created.timestamp
         },
-        school: {
-          name: documentData.school.name
-        },
-        teacher: {
-          name: documentData.teacher.name
-        },
+        school: documentData.school,
+        teacher: documentData.teacher,
         content: documentData.content
       }
     }
@@ -91,9 +85,12 @@ module.exports = {
       const schoolYear = documentData.content.year
       if (!schoolYear) throw new Error('Missing property "year" from documentData.content, please check.')
       const schoolData = getSchoolData(documentData.school.id)
+      const period = documentData.content.period.nb
+      if (!period) throw new Error('Missing property "documentData.content.period.nb", please check.')
       return {
-        title: 'Tilbakemeldingsskjema - arbeidspraksis - yrkesfaglig fordypning - YFF',
-        unofficialTitle: `Tilbakemeldingsskjema - arbeidspraksis - yrkesfaglig fordypning - YFF - ${documentData.student.name} - ${schoolData.fullName} - ${schoolYear}`,
+        title: `Varsel - orden - ${documentData.student.classId} - ${period} - ${schoolYear}`,
+        unofficialTitle: `orden - atferd - ${documentData.student.name} - ${documentData.student.classId} - ${period} - ${schoolYear}`,
+        fileTitle: `Varsel - orden - ${documentData.student.classId.replace(':', '')} - ${period} - ${schoolYear}`,
         ssn: privatePerson.ssn,
         documentDate: new Date(documentData.created.timestamp).toISOString(),
         caseNumber: documentData.flowStatus.syncElevmappe.result.elevmappe.CaseNumber,
@@ -108,34 +105,12 @@ module.exports = {
     enabled: true
   },
   getContactTeachers: {
-    enabled: false
+    enabled: true
   },
   sendEmail: {
-    // Det er KUN yff-bekreftelse-bedrift som skal ha e-post varsling ut til bedriften :)
-    enabled: false,
-    mapper: (documentData) => {
-      const mailText = 'Hei!<br/><br/>Her kommer en teste-epost'
-      const receivers = ['tullball@vtfk.no']
-      const mails = []
-      for (const receiver of receivers) {
-        mails.push({
-          to: [receiver],
-          from: 'MinElev <minelev@vtfk.no>',
-          subject: 'Tester en e-post fra MinElev',
-          template: {
-            templateName: 'vtfk',
-            templateData: {
-              body: mailText,
-              signature: {
-                name: 'MinElev',
-                company: 'Opplæring og folkehelse'
-              }
-            }
-          }
-        })
-      }
-      return mails
-    }
+    // Sender e-post varsel til kontaklærere (unntatt den som opprettet varselet)
+    enabled: true,
+    mapper: mailContactTeachers
   },
   updateDocumentStatus: {
     enabled: true
@@ -145,7 +120,7 @@ module.exports = {
     mapper: (documentData) => {
       return {
         description,
-        bedrift: documentData.content.utplassering.bedriftsNavn
+        schoolYear: documentData.content.year
       }
     }
   },
