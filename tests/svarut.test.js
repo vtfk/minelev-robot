@@ -16,8 +16,8 @@ const hasException = {
     syncElevmappe: {
       result: {
         privatePerson: {
-          ssn: "12345678910",
-          zipCode: "1234",
+          ssn: '12345678910',
+          zipCode: '1234',
           addressCode: 0
         }
       }
@@ -26,8 +26,8 @@ const hasException = {
       result: [
         {
           privatePerson: {
-            ssn: "12345678911",
-            zipCode: "1234",
+            ssn: '12345678911',
+            zipCode: '1234',
             addressCode: 0
           }
         }
@@ -46,8 +46,8 @@ const oneParentHasException = {
     syncElevmappe: {
       result: {
         privatePerson: {
-          ssn: "12345678910",
-          zipCode: "1234",
+          ssn: '12345678910',
+          zipCode: '1234',
           addressCode: 0
         }
       }
@@ -56,15 +56,15 @@ const oneParentHasException = {
       result: [
         {
           privatePerson: {
-            ssn: "12345678911",
-            zipCode: "1234",
+            ssn: '12345678911',
+            zipCode: '1234',
             addressCode: 0
           }
         },
         {
           privatePerson: {
-            ssn: "12345678912",
-            zipCode: "1234",
+            ssn: '12345678912',
+            zipCode: '1234',
             addressCode: 0
           }
         }
@@ -83,8 +83,8 @@ const hasAddressBlock = {
     syncElevmappe: {
       result: {
         privatePerson: {
-          ssn: "12345678910",
-          zipCode: "1234",
+          ssn: '12345678910',
+          zipCode: '1234',
           addressCode: 6
         }
       }
@@ -93,8 +93,8 @@ const hasAddressBlock = {
       result: [
         {
           privatePerson: {
-            ssn: "12345678911",
-            zipCode: "1234",
+            ssn: '12345678911',
+            zipCode: '1234',
             addressCode: 0
           }
         }
@@ -113,8 +113,8 @@ const oneParentHasAddressBlock = {
     syncElevmappe: {
       result: {
         privatePerson: {
-          ssn: "12345678910",
-          zipCode: "1234",
+          ssn: '12345678910',
+          zipCode: '1234',
           addressCode: 0
         }
       }
@@ -123,15 +123,15 @@ const oneParentHasAddressBlock = {
       result: [
         {
           privatePerson: {
-            ssn: "12345678911",
-            zipCode: "1234",
+            ssn: '12345678911',
+            zipCode: '1234',
             addressCode: 6
           }
         },
         {
           privatePerson: {
-            ssn: "12345678912",
-            zipCode: "1234",
+            ssn: '12345678912',
+            zipCode: '1234',
             addressCode: 0
           }
         }
@@ -150,8 +150,8 @@ const bothParentsHaveAddressBlock = {
     syncElevmappe: {
       result: {
         privatePerson: {
-          ssn: "12345678910",
-          zipCode: "1234",
+          ssn: '12345678910',
+          zipCode: '1234',
           addressCode: 0
         }
       }
@@ -160,15 +160,15 @@ const bothParentsHaveAddressBlock = {
       result: [
         {
           privatePerson: {
-            ssn: "12345678911",
-            zipCode: "1234",
+            ssn: '12345678911',
+            zipCode: '1234',
             addressCode: 6
           }
         },
         {
           privatePerson: {
-            ssn: "12345678912",
-            zipCode: "1234",
+            ssn: '12345678912',
+            zipCode: '1234',
             addressCode: 7
           }
         }
@@ -187,8 +187,8 @@ const allHaveAddressBlock = {
     syncElevmappe: {
       result: {
         privatePerson: {
-          ssn: "12345678910",
-          zipCode: "1234",
+          ssn: '12345678910',
+          zipCode: '1234',
           addressCode: 4
         }
       }
@@ -197,15 +197,15 @@ const allHaveAddressBlock = {
       result: [
         {
           privatePerson: {
-            ssn: "12345678911",
-            zipCode: "1234",
+            ssn: '12345678911',
+            zipCode: '1234',
             addressCode: 6
           }
         },
         {
           privatePerson: {
-            ssn: "12345678912",
-            zipCode: "1234",
+            ssn: '12345678912',
+            zipCode: '1234',
             addressCode: 7
           }
         }
@@ -224,8 +224,8 @@ const wrongZipCode = {
     syncElevmappe: {
       result: {
         privatePerson: {
-          ssn: "12345678910",
-          zipCode: "123",
+          ssn: '12345678910',
+          zipCode: '123',
           addressCode: 0
         }
       }
@@ -234,15 +234,15 @@ const wrongZipCode = {
       result: [
         {
           privatePerson: {
-            ssn: "12345678911",
-            zipCode: "1234",
+            ssn: '12345678911',
+            zipCode: '1234',
             addressCode: 0
           }
         },
         {
           privatePerson: {
-            ssn: "12345678912",
-            zipCode: "1234",
+            ssn: '12345678912',
+            zipCode: '1234',
             addressCode: 0
           }
         }
@@ -261,8 +261,8 @@ const oneParentHasWrongZipCode = {
     syncElevmappe: {
       result: {
         privatePerson: {
-          ssn: "12345678910",
-          zipCode: "1234",
+          ssn: '12345678910',
+          zipCode: '1234',
           addressCode: 0
         }
       }
@@ -271,15 +271,15 @@ const oneParentHasWrongZipCode = {
       result: [
         {
           privatePerson: {
-            ssn: "12345678911",
-            zipCode: "1234",
+            ssn: '12345678911',
+            zipCode: '1234',
             addressCode: 0
           }
         },
         {
           privatePerson: {
-            ssn: "12345678912",
-            zipCode: "12346",
+            ssn: '12345678912',
+            zipCode: '12346',
             addressCode: 0
           }
         }
@@ -298,8 +298,8 @@ const parentsAreMissing = {
     syncElevmappe: {
       result: {
         privatePerson: {
-          ssn: "12345678910",
-          zipCode: "1234",
+          ssn: '12345678910',
+          zipCode: '1234',
           addressCode: 0
         }
       }
@@ -320,8 +320,8 @@ const noParentsToAdd = {
     syncElevmappe: {
       result: {
         privatePerson: {
-          ssn: "12345678910",
-          zipCode: "1234",
+          ssn: '12345678910',
+          zipCode: '1234',
           addressCode: 0
         }
       }
@@ -339,8 +339,8 @@ const allIsGood = {
     syncElevmappe: {
       result: {
         privatePerson: {
-          ssn: "12345678910",
-          zipCode: "1234",
+          ssn: '12345678910',
+          zipCode: '1234',
           addressCode: 0
         }
       }
@@ -349,15 +349,15 @@ const allIsGood = {
       result: [
         {
           privatePerson: {
-            ssn: "12345678911",
-            zipCode: "1234",
+            ssn: '12345678911',
+            zipCode: '1234',
             addressCode: 0
           }
         },
         {
           privatePerson: {
-            ssn: "12345678912",
-            zipCode: "1234",
+            ssn: '12345678912',
+            zipCode: '1234',
             addressCode: 0
           }
         }
@@ -409,5 +409,3 @@ describe('All is good', () => {
     expect(canSendOnSvarut(allIsGood).result).toBe(true)
   })
 })
-
-
