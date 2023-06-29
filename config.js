@@ -9,7 +9,9 @@ module.exports = {
   DOCUMENT_DIR: process.env.DOCUMENT_DIR || 'testdocs/documents',
   DOCUMENTS_PER_RUN: (process.env.DOCUMENTS_PER_RUN && Number(process.env.DOCUMENTS_PER_RUN)) || 10,
   ENCRYPTION_KEY: process.env.ENCRYPTION_KEY || 'super hemmelig nyckel',
+  LOG_DIR: process.env.LOG_DIR || false,
   RETRY_INTERVAL_MINUTES: retryList,
+  TEAMS_STATUS_WEBHOOK_URL: process.env.TEAMS_STATUS_WEBHOOK_URL || 'hfoiudshfkjdsfdsf',
   mongodb: {
     MONGODB_CONNECTION_STRING: process.env.MONGODB_CONNECTION_STRING || undefined,
     MONGODB_COLLECTION: process.env.MONGODB_COLLECTION || undefined,
