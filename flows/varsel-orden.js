@@ -89,7 +89,7 @@ module.exports = {
       if (!period) throw new Error('Missing property "documentData.content.period.nb", please check.')
       return {
         title: `Varsel - orden - ${documentData.student.classId} - ${period} - ${schoolYear}`,
-        unofficialTitle: `orden - atferd - ${documentData.student.name} - ${documentData.student.classId} - ${period} - ${schoolYear}`,
+        unofficialTitle: `Varsel - orden - ${documentData.student.name} - ${documentData.student.classId} - ${period} - ${schoolYear}`,
         fileTitle: `Varsel - orden - ${documentData.student.classId.replace(':', '')} - ${period} - ${schoolYear}`,
         ssn: privatePerson.ssn,
         documentDate: new Date(documentData.created.timestamp).toISOString(),
