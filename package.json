@@ -1,14 +1,18 @@
 {
   "name": "minelev-robot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Handles documents from MinElev",
   "main": "index.js",
   "scripts": {
-    "test": "jest --verbose"
+    "start": "node ./index.js",
+    "test": "standard && jest --verbose",
+    "setup": "node ./tools/setup.js",
+    "delete-files": "node ./tools/delete-finished-and-copies.js",
+    "status-alert": "node ./tools/status-alert.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "jorgtho",
+  "license": "MIT",
   "dependencies": {
     "@azure/msal-node": "^1.17.3",
     "@vtfk/encryption": "^1.0.1",

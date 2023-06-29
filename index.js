@@ -6,7 +6,25 @@
   const { logger, logConfig } = require('@vtfk/logger')
   const { getReadyDocuments } = require('./robot/get-ready-documents')
   const { disconnect } = require('./lib/mongo-client')
+  const { LOG_DIR } = require('./config')
+  const { appendFileSync } = require('fs')
 
+  const today = new Date()
+  const month = today.getMonth() + 1 > 9 ? `${today.getMonth() + 1}` : `0${today.getMonth() + 1}`
+  const logName = `${today.getFullYear()} - ${month}`
+
+  const localLogger = (entry) => {
+    console.log(entry)
+    if (LOG_DIR) {
+      appendFileSync(`${LOG_DIR}/${logName}.log`, `${entry}\n`)
+    }
+  }
+  logConfig({
+    teams: {
+      onlyInProd: false
+    },
+    localLogger
+  })
   logger('info', ['new run'])
 
   try {
