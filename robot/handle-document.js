@@ -178,7 +178,7 @@ const handleDocument = async (document) => {
   // KRR check
   documentData.flowStatus = await runJob(document, flow, 'krr', documentData, krr)
 
-  // KRR check
+  // FREG check
   documentData.flowStatus = await runJob(document, flow, 'freg', documentData, freg)
 
   // SyncElevmappe
@@ -208,11 +208,8 @@ const handleDocument = async (document) => {
   // Update document status
   documentData.flowStatus = await runJob(document, flow, 'updateDocumentStatus', documentData, updateDocumentStatus)
 
-  // Update document status
+  // Create statistics element
   documentData.flowStatus = await runJob(document, flow, 'statistics', documentData, statistics)
-
-  // Set flowStatus to finished if everything is good
-  documentData.flowStatus = await runJob(document, flow, 'finishFlow', documentData, finishFlow)
 
   // Fail on purpose
   documentData.flowStatus = await runJob(document, flow, 'failOnPurpose', documentData, async () => { throw new Error('Æ feilja med vilje') })
