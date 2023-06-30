@@ -17,7 +17,6 @@ Result of the job is stored in flowStatus
 Object that is created on a single document. Keeps tracks of which jobs have run, and result from the job
 If a job is not enabled - it will not be present in flowstatus
 
-
 ## Scripts
 ### npm run start
 Runs [./index.js](./index.js) - which is the main "robot", and does the following:
@@ -33,6 +32,9 @@ Creates a status-report and sends it to Teams-channel
 
 ### npm run delete-files
 Deletes files in 'finished' and 'copies' directories
+
+### npm run setup
+Creates needed directories based on your .env preferences (see [#setup](#setup-and-development))
 
 ## Jobs (sorted in the same way the are run if they are enabled in a flow)
 Almost all jobs can be tailored to suit a flow's needs (see the flows for examples/mappers) 
