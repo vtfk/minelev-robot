@@ -35,7 +35,7 @@
 
   let msg
   let colour
-  const problems = numberOfReadyDocuments + dirCheck['failed']
+  const problems = numberOfReadyDocuments + dirCheck.failed
   if (problems === 0) {
     msg = 'Alt er tipp topp, tommel opp!'
     colour = '1ea80c'
@@ -70,22 +70,22 @@
         markdown: true
       },
       {
-        activityTitle: `**${dirCheck['queue']}** dokumenter i kø på server`,
+        activityTitle: `**${dirCheck.queue}** dokumenter i kø på server`,
         activitySubtitle: 'Dette er dokumenter som er sendt inn fra MinElev, og ligger klare for håndtering i kø på server',
         markdown: true
       },
       {
-        activityTitle: `**${dirCheck['failed']}** dokumenter som har feilet på server`,
+        activityTitle: `**${dirCheck.failed}** dokumenter som har feilet på server`,
         activitySubtitle: 'Dette er dokumenter som er forsøkt for mange ganger, og trenger hjelp',
         markdown: true
       },
       {
-        activityTitle: `**${dirCheck['finished']}** dokumenter som er ferdigstilt på server`,
+        activityTitle: `**${dirCheck.finished}** dokumenter som er ferdigstilt på server`,
         activitySubtitle: 'Dette er dokumenter som er sendt inn fra MinElev, og er ferdig håndtert på server - vil bli slettet ved neste slettejobb',
         markdown: true
       },
       {
-        activityTitle: `**${dirCheck['copies']}** dokumenter som ligger kopiert som backup på server`,
+        activityTitle: `**${dirCheck.copies}** dokumenter som ligger kopiert som backup på server`,
         activitySubtitle: 'Dette er dokumenter som er sendt inn fra MinElev, og er kopiert som backup på server - vil bli slettet ved neste slettejobb',
         markdown: true
       },
