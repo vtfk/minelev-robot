@@ -99,7 +99,7 @@ const handleFailedJob = (jobName, documentData, document, error) => {
   const minutesToWait = RETRY_INTERVAL_MINUTES[documentData.flowStatus.runs]
   const now = new Date()
   const nextRun = new Date(now.setMinutes(now.getMinutes() + minutesToWait)).toISOString().replaceAll(':', '--') // Filenames can't contain :
-  logger('warn', [`Job failed, will try again in ${RETRY_INTERVAL_MINUTES[documentData.flowStatus.runs]} minutes`, `Failed in job: ${jobName}`, `Runs: ${documentData.flowStatus.runs}/${RETRY_INTERVAL_MINUTES.length}`, 'error:', errorMsg])
+  logger(documentData.flowStatus.runs > 1 ? 'warn' : 'info', [`Job failed, will try again in ${RETRY_INTERVAL_MINUTES[documentData.flowStatus.runs]} minutes`, `Failed in job: ${jobName}`, `Runs: ${documentData.flowStatus.runs}/${RETRY_INTERVAL_MINUTES.length}`, 'error:', errorMsg])
   try {
     writeFileSync(`./${DOCUMENT_DIR}/queue/${document}`, JSON.stringify(documentData, null, 2)) // Save status
     renameSync(`./${DOCUMENT_DIR}/queue/${document}`, `./${DOCUMENT_DIR}/queue/${documentData._id}_nextrun_${nextRun}.json`) // Rename file with new retry timestamp
