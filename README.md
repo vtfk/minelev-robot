@@ -58,9 +58,9 @@ Archives document in archive.
 Sends archived document on svarut to recipients defined on archived document.
 
 **Special cases:** Checks recipients in the following order:
-1. Does student have address block => do not send on Svarut, send internal note to school that letter must be delivered to student manually
-1. Does student exists in SVARUT_EXCEPTIONS => do not send on Svarut, send internal note to school that letter must be delivered to student manually
-1. Does student have illegal zipCode => do not send on Svarut, send internal note to school that letter must be delivered to student manually
+1. Does recipient have address block => do not send on Svarut, send internal note to school that letter must be delivered to student manually
+1. Does recipient exists in SVARUT_EXCEPTIONS => do not send on Svarut, send internal note to school that letter must be delivered to student manually
+1. Does recipient have illegal zipCode (not 4 digits, set to 9999), or zipPlace set to UKJENT => do not send on Svarut, send internal note to school that letter must be delivered to student manually
 1. Does student not have registered parents and is under 18 => do not send on Svarut, send internal note to school that letter must be distributed manually to student and parents
 
 ### GetContactTeachers

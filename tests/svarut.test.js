@@ -251,6 +251,81 @@ const wrongZipCode = {
   }
 }
 
+const wrongZipCode2 = {
+  flowStatus: {
+    freg: {
+      result: {
+        alder: 16
+      }
+    },
+    syncElevmappe: {
+      result: {
+        privatePerson: {
+          ssn: '12345678910',
+          zipCode: '9999',
+          addressCode: 0
+        }
+      }
+    },
+    addParentsIfUnder18: {
+      result: [
+        {
+          privatePerson: {
+            ssn: '12345678911',
+            zipCode: '1234',
+            addressCode: 0
+          }
+        },
+        {
+          privatePerson: {
+            ssn: '12345678912',
+            zipCode: '1234',
+            addressCode: 0
+          }
+        }
+      ]
+    }
+  }
+}
+
+const wrongZipPlace = {
+  flowStatus: {
+    freg: {
+      result: {
+        alder: 16
+      }
+    },
+    syncElevmappe: {
+      result: {
+        privatePerson: {
+          ssn: '12345678910',
+          zipCode: '1234',
+          zipPlace: 'UKJENT',
+          addressCode: 0
+        }
+      }
+    },
+    addParentsIfUnder18: {
+      result: [
+        {
+          privatePerson: {
+            ssn: '12345678911',
+            zipCode: '1234',
+            addressCode: 0
+          }
+        },
+        {
+          privatePerson: {
+            ssn: '12345678912',
+            zipCode: '1234',
+            addressCode: 0
+          }
+        }
+      ]
+    }
+  }
+}
+
 const oneParentHasWrongZipCode = {
   flowStatus: {
     freg: {
@@ -394,6 +469,12 @@ describe('Check zipcode', () => {
   })
   test('One parent has wrong zipcode', () => {
     expect(canSendOnSvarut(oneParentHasWrongZipCode).result).toBe(false)
+  })
+  test('Student has wrong zipcode (9999)', () => {
+    expect(canSendOnSvarut(wrongZipCode2).result).toBe(false)
+  })
+  test('Student has wrong zipplace (UKJENT)', () => {
+    expect(canSendOnSvarut(wrongZipPlace).result).toBe(false)
   })
 })
 describe('Check parents', () => {

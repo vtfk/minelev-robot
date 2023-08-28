@@ -15,37 +15,33 @@ module.exports = async (jobDef, documentData) => {
     'Ocp-Apim-Subscription-Key': archive.ARCHIVE_SUBSCRIPTION_KEY
   }
 
-  let payload
-
-  if (personData.skipDSF) {
-    logger('info', ['syncElevmappe', 'Synching elevmappe with skipDSF'])
-    const { skipDSF, ssn, firstName, lastName, streetAddress, zipCode, zipPlace } = personData
-    if (!(skipDSF && ssn && firstName && lastName && streetAddress && zipCode && zipPlace)) {
-      throw new Error('missing required parameters. Must be skipDSF, ssn, firstName, lastName, streetAddress, zipCode, zipPlace')
-    }
-    payload = {
-      ssn,
-      firstName,
-      lastName,
-      streetAddress,
-      zipCode,
-      zipPlace,
-      addressCode: 0,
-      skipDSF
-    }
+  logger('info', ['syncElevmappe', 'Synching elevmappe'])
+  const { ssn } = personData
+  if (!ssn) {
+    throw new Error('missing required parameters. Must have ssn')
   }
 
-  if (!personData.skipDSF) {
-    logger('info', ['syncElevmappe', 'Synching elevmappe'])
-    const { ssn } = personData
-    if (!ssn) {
-      throw new Error('missing required parameters. Must have ssn')
+  try {
+    const payload = { ssn }
+    const { data } = await axios.post(`${archive.ARCHIVE_URL}/SyncElevmappe`, payload, { headers })
+    logger('info', ['syncElevmappe', 'Successfully synched elevmappe', 'privatePerson recNo', data.privatePerson.recno, 'elevmappe saksnummer', data.elevmappe.CaseNumber])
+    return data
+  } catch (error) {
+    if (error.response?.data?.error === 'Ingen funnet med angitt identifikasjon') { // Not found in dsf - probably exchange student, overriding with dummy data
+      const payload = {
+        ssn,
+        firstName: documentData.student.firstName,
+        lastName: documentData.student.lastName,
+        streetAddress: 'Ukjent adresse',
+        zipCode: '9999',
+        zipPlace: 'UKJENT',
+        addressCode: 0,
+        skipDSF: true
+      }
+      const { data } = await axios.post(`${archive.ARCHIVE_URL}/SyncElevmappe`, payload, { headers })
+      logger('info', ['syncElevmappe', 'Successfully synched elevmappe without DSF', 'privatePerson recNo', data.privatePerson.recno, 'elevmappe saksnummer', data.elevmappe.CaseNumber])
+      return data
     }
-    payload = {
-      ssn
-    }
+    throw error
   }
-  const { data } = await axios.post(`${archive.ARCHIVE_URL}/SyncElevmappe`, payload, { headers })
-  logger('info', ['syncElevmappe', 'Successfully synched elevmappe', 'privatePerson recNo', data.privatePerson.recno, 'elevmappe saksnummer', data.elevmappe.CaseNumber])
-  return data
 }
