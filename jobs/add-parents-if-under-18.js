@@ -9,7 +9,7 @@ module.exports = async (jobDef, documentData) => {
   if (!documentData.flowStatus?.freg?.result?.foreldreansvar) {
     throw new Error('Could not find array "foreldreansvar" on freg result, something is wrong...')
   }
-  const parents = documentData.flowStatus.freg.result.foreldreansvar
+  const parents = documentData.flowStatus.freg.result.foreldreansvar.filter(parent => parent.erGjeldende && parent.ansvar !== 'ukjent')
 
   if (documentData.flowStatus.freg.result.alder >= 18) {
     logger('info', ['addParentsIfUnder18', 'Student is over 18, will not sync parents'])
