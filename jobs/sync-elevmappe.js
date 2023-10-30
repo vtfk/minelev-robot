@@ -33,7 +33,7 @@ module.exports = async (jobDef, documentData) => {
         firstName: documentData.student.firstName,
         lastName: documentData.student.lastName,
         streetAddress: 'Ukjent adresse',
-        zipCode: '9999',
+        zipCode: '9999', // 9999 UKJENT will trigger invalidZip in can-send-on-svarut.js, and will trigger internal note to school if should be sent on svarut
         zipPlace: 'UKJENT',
         addressCode: 0,
         skipDSF: true
