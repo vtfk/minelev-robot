@@ -4,9 +4,9 @@ const { logger } = require('@vtfk/logger')
 const graphToken = require('../lib/get-graph-token')
 
 const getAgeFromSsn = ssn => {
-  const dayStr = ssn.substring(0,2)
-  const month = ssn.substring(2,4)
-  const yearStr = ssn.substring(4,6)
+  const dayStr = ssn.substring(0, 2)
+  const month = ssn.substring(2, 4)
+  const yearStr = ssn.substring(4, 6)
   const day = Number(dayStr) > 40 ? (Number(dayStr) - 40).toString() : dayStr
   const year = Number(yearStr) < 40 ? `20${yearStr}` : `19${yearStr}` // remember to update this in 20 years
   const birthDate = `${year}-${month}-${day}`
