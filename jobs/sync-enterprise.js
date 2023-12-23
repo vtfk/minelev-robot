@@ -1,6 +1,5 @@
-const axios = require('axios').default
-const { archive } = require('../config')
 const { logger } = require('@vtfk/logger')
+const { callArchive } = require('../lib/call-archive')
 
 module.exports = async (jobDef, documentData) => {
   const mapper = jobDef.mapper
@@ -13,12 +12,7 @@ module.exports = async (jobDef, documentData) => {
 
   if (!enterpriseNumber) throw new Error('Mapper must return property "enterpriseNumber"')
 
-  const headers = {
-    // Til fremtiden: lag en funksjon som henter AzureAD token og legger i header
-    'Ocp-Apim-Subscription-Key': archive.ARCHIVE_SUBSCRIPTION_KEY
-  }
-
-  const { data } = await axios.post(`${archive.ARCHIVE_URL}/SyncEnterprise`, { orgnr: enterpriseNumber }, { headers })
+  const data = await callArchive('SyncEnterprise', { orgnr: enterpriseNumber })
   logger('info', ['syncEnterprise', 'Successfully synched enterprise', 'RecNo', data.result.enterprise.recno])
   return data
 }

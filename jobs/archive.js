@@ -1,7 +1,6 @@
-const axios = require('axios').default
-const { archive } = require('../config')
 const { logger } = require('@vtfk/logger')
 const hasSvarutException = require('../lib/has-svarut-exception')
+const { callArchive } = require('../lib/call-archive')
 
 const repackArchiveParents = (parents) => {
   const result = []
@@ -37,14 +36,10 @@ module.exports = async (jobDef, documentData) => {
   const payload = {
     system: 'minelev',
     template: `${documentData.type}-${documentData.variant}`,
-    secure: jobDef.options?.secure || false,
     parameter: archiveData
   }
-
-  const headers = {
-    'Ocp-Apim-Subscription-Key': archive.ARCHIVE_SUBSCRIPTION_KEY
-  }
-  const { data } = await axios.post(`${archive.ARCHIVE_URL}/archive`, payload, { headers })
+  
+  const data = await callArchive('archive', payload)
   logger('info', ['archive', 'Successfully archived document', data.DocumentNumber])
   return data
 }

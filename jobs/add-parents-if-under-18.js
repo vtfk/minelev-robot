@@ -1,6 +1,5 @@
-const axios = require('axios').default
-const { archive } = require('../config')
 const { logger } = require('@vtfk/logger')
+const { callArchive } = require('../lib/call-archive')
 
 module.exports = async (jobDef, documentData) => {
   if (!documentData.flowStatus?.freg?.result) {
@@ -28,14 +27,8 @@ module.exports = async (jobDef, documentData) => {
     if (!parentsToSync.includes(parent.ansvarlig) && parent.ansvarlig.length === 11 && !isNaN(parent.ansvarlig)) parentsToSync.push(parent.ansvarlig) // Check that ansvarlig is "ssn", can be "ukjent" Add parents ssn to list parentsToSync (to not get duplicates, just in case)
   }
 
-  // Run syncPrivatePerson on each parent
-  const headers = {
-    // Til fremtiden: lag en funksjon som henter AzureAD token og legger i header
-    'Ocp-Apim-Subscription-Key': archive.ARCHIVE_SUBSCRIPTION_KEY
-  }
-
   for (const parentSsn of parentsToSync) {
-    const { data } = await axios.post(`${archive.ARCHIVE_URL}/SyncPrivatePerson`, { ssn: parentSsn }, { headers })
+    const data = await callArchive('SyncPrivatePerson', { ssn: parentSsn })
     result.push(data)
   }
   logger('info', ['addParentsIfUnder18', `Successfully synced ${parentsToSync.length} parents.`])

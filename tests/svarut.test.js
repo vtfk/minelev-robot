@@ -85,7 +85,7 @@ const hasAddressBlock = {
         privatePerson: {
           ssn: '12345678910',
           zipCode: '1234',
-          addressCode: 6
+          addressProtection: true
         }
       }
     },
@@ -189,7 +189,7 @@ const allHaveAddressBlock = {
         privatePerson: {
           ssn: '12345678910',
           zipCode: '1234',
-          addressCode: 4
+          addressProtection: true
         }
       }
     },
@@ -199,14 +199,14 @@ const allHaveAddressBlock = {
           privatePerson: {
             ssn: '12345678911',
             zipCode: '1234',
-            addressCode: 6
+            addressProtection: true
           }
         },
         {
           privatePerson: {
             ssn: '12345678912',
             zipCode: '1234',
-            addressCode: 7
+            addressProtection: true
           }
         }
       ]
