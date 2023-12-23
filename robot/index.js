@@ -1,5 +1,4 @@
 const { readdirSync } = require('fs')
-const { DOCUMENT_DIR } = require('../config')
 const { logger, logConfig } = require('@vtfk/logger')
 const { handleDocument } = require('./handle-document')
 
@@ -13,10 +12,10 @@ const readyForRetry = (file) => {
 
 // Get all documents in queue - try to handle each of them
 const robot = async () => {
-  const readyDocuments = readdirSync(`${DOCUMENT_DIR}/queue`).filter(file => { return file.endsWith('.json') && !file.endsWith('_pdf.json') && readyForRetry(file) })
+  const readyDocuments = readdirSync('./documents/queue').filter(file => { return file.endsWith('.json') && !file.endsWith('_pdf.json') && readyForRetry(file) })
   logger('info', ['saksbehandler', `${readyDocuments.length} documents ready for handling`])
 
-  // retry handling here - maybe controlled by filename - makes it more efficient :)
+  // retry handling here - controlled by filename instead of property - makes it more efficient :)
 
   // Only loop through ready documents
   for (const document of readyDocuments) {

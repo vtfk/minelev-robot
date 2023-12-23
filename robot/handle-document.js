@@ -1,5 +1,5 @@
 const { logger, logConfig } = require('@vtfk/logger')
-const { DOCUMENT_DIR, ENCRYPTION_KEY, RETRY_INTERVAL_MINUTES } = require('../config')
+const { ENCRYPTION_KEY, RETRY_INTERVAL_MINUTES } = require('../config')
 const { decryptContent } = require('@vtfk/encryption')
 const { renameSync, writeFileSync } = require('fs')
 
@@ -79,15 +79,15 @@ const handleFailedJob = (jobName, documentData, document, error) => {
   if (documentData.flowStatus.runs >= RETRY_INTERVAL_MINUTES.length) {
     logger('error', ['Job failed, will NOT run again', `Failed in job: ${jobName}`, `Runs: ${documentData.flowStatus.runs}/${RETRY_INTERVAL_MINUTES.length}. Reset flowStatus.runs to try again`, 'error:', errorMsg])
     try {
-      writeFileSync(`./${DOCUMENT_DIR}/queue/${document}`, JSON.stringify(documentData, null, 2))
-      renameSync(`./${DOCUMENT_DIR}/queue/${document}`, `./${DOCUMENT_DIR}/failed/${document}`)
+      writeFileSync(`./documents/queue/${document}`, JSON.stringify(documentData, null, 2))
+      renameSync(`./documents/queue/${document}`, `./documents/failed/${document}`)
     } catch (error) {
       logger('error', ['Offh, could not save and move file, stuff might run twice...', `Failed in job: ${jobName}`, 'Probs smart to check it out when you have the time', 'save-error:', error])
     }
     // Move pdf as well - if it exists
     if (documentData.flowStatus?.createPdf?.finished) {
       try {
-        renameSync(`./${DOCUMENT_DIR}/queue/${documentData._id}_pdf.txt`, `./${DOCUMENT_DIR}/failed/${documentData._id}_pdf.txt`)
+        renameSync(`./documents/queue/${documentData._id}_pdf.txt`, `./documents/failed/${documentData._id}_pdf.txt`)
       } catch (error) {
         logger('error', ['Offh, could not move pdf file', 'You have to move it manually, if needed', 'save-error:', error])
       }
@@ -101,8 +101,8 @@ const handleFailedJob = (jobName, documentData, document, error) => {
   const nextRun = new Date(now.setMinutes(now.getMinutes() + minutesToWait)).toISOString().replaceAll(':', '--') // Filenames can't contain :
   logger(documentData.flowStatus.runs > 1 ? 'warn' : 'info', [`Job failed, will try again in ${RETRY_INTERVAL_MINUTES[documentData.flowStatus.runs]} minutes`, `Failed in job: ${jobName}`, `Runs: ${documentData.flowStatus.runs}/${RETRY_INTERVAL_MINUTES.length}`, 'error:', errorMsg])
   try {
-    writeFileSync(`./${DOCUMENT_DIR}/queue/${document}`, JSON.stringify(documentData, null, 2)) // Save status
-    renameSync(`./${DOCUMENT_DIR}/queue/${document}`, `./${DOCUMENT_DIR}/queue/${documentData._id}_nextrun_${nextRun}.json`) // Rename file with new retry timestamp
+    writeFileSync(`./documents/queue/${document}`, JSON.stringify(documentData, null, 2)) // Save status
+    renameSync(`./documents/queue/${document}`, `./documents/queue/${documentData._id}_nextrun_${nextRun}.json`) // Rename file with new retry timestamp
   } catch (error) {
     logger('error', ['Offh, could not save file with new status, stuff might run twice...', `Failed in job: ${jobName}`, 'Probs smart to check it out when you have the time', 'save-error:', error])
   }
@@ -131,15 +131,15 @@ const finishFlow = (document, documentData) => {
     logger('info', ['Wohoo, flow has finished, all jobs succeeded. Moving document to finished'])
     documentData.flowStatus.finished = true
     try {
-      writeFileSync(`./${DOCUMENT_DIR}/queue/${document}`, JSON.stringify(documentData, null, 2)) // Save status
-      renameSync(`./${DOCUMENT_DIR}/queue/${document}`, `./${DOCUMENT_DIR}/finished/${document}`) // Rename file into finished folder
+      writeFileSync(`./documents/queue/${document}`, JSON.stringify(documentData, null, 2)) // Save status
+      renameSync(`./documents/queue/${document}`, `./documents/finished/${document}`) // Rename file into finished folder
     } catch (error) {
       logger('error', ['Offh, could not save file with new status, stuff might run twice...', 'Failed when trying to move file to finished', 'Probs smart to check it out when you have the time', 'save-error:', error])
     }
     // Move pdf as well - if it exists
     if (documentData.flowStatus?.createPdf?.finished) {
       try {
-        renameSync(`./${DOCUMENT_DIR}/queue/${documentData._id}_pdf.txt`, `./${DOCUMENT_DIR}/finished/${documentData._id}_pdf.txt`)
+        renameSync(`./documents/queue/${documentData._id}_pdf.txt`, `./documents/finished/${documentData._id}_pdf.txt`)
       } catch (error) {
         logger('error', ['Offh, could not move pdf file', 'You have to move it manually, if needed', 'save-error:', error])
       }
@@ -149,7 +149,7 @@ const finishFlow = (document, documentData) => {
 
 // "document" is the filename
 const handleDocument = async (document) => {
-  const documentData = require(`../${DOCUMENT_DIR}/queue/${document}`)
+  const documentData = require(`../documents/queue/${document}`)
   logConfig({ prefix: `handle-document - ${documentData._id} - ${documentData.type} - ${documentData.variant}` })
 
   // Get flow for document
@@ -173,7 +173,7 @@ const handleDocument = async (document) => {
     documentData.isEncrypted = false
   }
 
-  // RUN JOBS BASED ON FLOW (Only jobs defined in the flow will actually be run)
+  // RUN JOBS BASED ON FLOW (Only jobs defined and enabled in the flow will actually be run)
 
   // KRR check
   documentData.flowStatus = await runJob(document, flow, 'krr', documentData, krr)

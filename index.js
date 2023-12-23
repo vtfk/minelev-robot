@@ -6,26 +6,32 @@
   const { logger, logConfig } = require('@vtfk/logger')
   const { getReadyDocuments } = require('./robot/get-ready-documents')
   const { disconnect } = require('./lib/mongo-client')
-  const { LOG_DIR } = require('./config')
-  const { appendFileSync } = require('fs')
+  const { createLocalLogger } = require('./lib/local-logger')
+  const { existsSync, mkdirSync } = require('fs')
 
-  const today = new Date()
-  const month = today.getMonth() + 1 > 9 ? `${today.getMonth() + 1}` : `0${today.getMonth() + 1}`
-  const logName = `${today.getFullYear()} - ${month}`
-
-  const localLogger = (entry) => {
-    console.log(entry)
-    if (LOG_DIR) {
-      appendFileSync(`${LOG_DIR}/${logName}.log`, `${entry}\n`)
-    }
-  }
+  // Set up logging
   logConfig({
     teams: {
       onlyInProd: false
     },
-    localLogger
+    localLogger: createLocalLogger('minelev-robot')
   })
-  logger('info', ['new run'])
+
+  logger('info', ['---------- NEW RUN ----------'])
+
+  // Make sure directories are setup correct
+  const syncDir = (dir) => {
+    if (!existsSync(dir)) {
+      logger('info', [`${dir} folder does not exist, creating...`])
+      mkdirSync(dir)
+    }
+  }
+  // Setup document-dirs
+  syncDir('./documents')
+  syncDir('./documents/queue')
+  syncDir('./documents/failed')
+  syncDir('./documents/finished')
+  syncDir('./documents/copies')
 
   try {
     await getReadyDocuments()
