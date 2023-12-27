@@ -33,7 +33,7 @@ module.exports = {
   ARCHIVE: {
     URL: process.env.ARCHIVE_URL || 'arkiv.nononono',
     API_SCOPE: process.env.ARCHIVE_API_SCOPE || 'skup',
-    ROBOT_RECNO: process.env.ROBOT_RECNO || '200336' // Prod is 200326 (Vfk prod 200452, vfk test 200301) (tfk prod 200412, tfk test 200232)
+    ROBOT_RECNO: process.env.ARCHIVE_ROBOT_RECNO || '200301' // (Vfk prod 200452, vfk test 200301) (tfk prod 200412, tfk test 200232)
   },
   PDF: {
     URL: process.env.PDF_URL || 'pdf.pdf.pdffffffff',
