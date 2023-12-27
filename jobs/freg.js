@@ -1,7 +1,7 @@
 const axios = require('axios').default
-const { freg } = require('../config')
+const { FREG } = require('../config')
 const { logger } = require('@vtfk/logger')
-const graphToken = require('../lib/get-graph-token')
+const { getMsalToken } = require('../lib/get-msal-token')
 
 const getAgeFromSsn = ssn => {
   const dayStr = ssn.substring(0, 2)
@@ -22,7 +22,15 @@ module.exports = async (jobDef, documentData) => {
   }
   logger('info', ['freg', 'Mapper is defined in options. Will use it.'])
   const { ssn } = mapper(documentData)
-  const accessToken = await graphToken(freg.FREG_API_SCOPE, 'freg')
+  
+  const authConfig = {
+    clientId: APPREG.CLIENT_ID,
+    tenantId: APPREG.TENANT_ID,
+    clientSecret: APPREG.CLIENT_SECRET,
+    scope: FREG.API_SCOPE
+  }
+  const accessToken = await getMsalToken(authConfig)
+  
   const payload = {
     ssn,
     includeForeldreansvar: true

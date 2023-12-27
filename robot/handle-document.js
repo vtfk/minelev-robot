@@ -161,7 +161,7 @@ const handleDocument = async (document) => {
   }
 
   // Set up flowStatus if missing
-  if (!documentData.flowStatus) documentData.flowStatus = { runs: 0 }
+  if (!documentData.flowStatus) documentData.flowStatus = { runs: 0, createdTimestamp: new Date().toISOString() }
   // New run, reset failed
   documentData.flowStatus.failed = false
 

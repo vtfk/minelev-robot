@@ -1,6 +1,6 @@
 const { logger } = require('@vtfk/logger')
 const { connect } = require('../lib/mongo-client')
-const { mongodb, DOCUMENTS_PER_RUN, COUNTY_NUMBER } = require('../config')
+const { MONGODB, DOCUMENTS_PER_RUN, COUNTY_NUMBER } = require('../config')
 const { writeFileSync, renameSync } = require('fs')
 
 const getReadyDocuments = async () => {
@@ -8,7 +8,7 @@ const getReadyDocuments = async () => {
     if (!COUNTY_NUMBER) throw new Error('No COUNTY_NUMBER, did you forget to set it in .env?')
     const mongoClient = await connect()
     logger('info', ['queue', 'get next document in queue'])
-    const collection = mongoClient.db(mongodb.MONGODB_DB).collection(mongodb.MONGODB_COLLECTION)
+    const collection = mongoClient.db(MONGODB.DB).collection(MONGODB.COLLECTION)
     const documents = await collection.find({ isQueued: true, 'county.countyNumber': COUNTY_NUMBER }).sort({ timestamp: 1 }).limit(DOCUMENTS_PER_RUN).toArray() // Get documents for county and ready
     logger('info', ['queue', `got ${documents.length} documents from queue`, documents.length === 0 ? 'No new documents' : 'Saving documents to local files'])
 

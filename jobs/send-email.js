@@ -1,6 +1,5 @@
-const { mail } = require('../config')
+const { MAIL } = require('../config')
 const axios = require('axios').default
-const generateJwt = require('../lib/generate-jwt')
 const { logger } = require('@vtfk/logger')
 
 module.exports = async (jobDef, documentData) => {
@@ -12,14 +11,12 @@ module.exports = async (jobDef, documentData) => {
 
   const mailData = mapper(documentData)
 
-  const mailToken = generateJwt(mail.MAIL_JWT)
-
   const mailPayloads = Array.isArray(mailData) ? mailData : [mailData]
   logger('info', ['sendMail', `Sending ${mailPayloads.length} mails`])
 
   for (const mailPayload of mailPayloads) {
     logger('info', ['sendMail', `Sending mail to ${mailPayload.to.length} recipients`])
-    await axios.post(mail.MAIL_URL, mailPayload, { headers: { Authorization: `Bearer ${mailToken}` } })
+    await axios.post(MAIL.URL, mailPayload, { headers: { 'x-functions-key': MAIL.KEY } })
     logger('info', ['sendMail', `Sent mail to ${mailPayload.to.length} recipients`])
   }
 

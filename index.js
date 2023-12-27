@@ -8,6 +8,7 @@
   const { disconnect } = require('./lib/mongo-client')
   const { createLocalLogger } = require('./lib/local-logger')
   const { existsSync, mkdirSync } = require('fs')
+  const { deleteFinishedDocuments } = require('./tools/delete-finished-documents')
 
   // Set up logging
   logConfig({
@@ -48,6 +49,13 @@
   logConfig({
     prefix: false
   })
+
+  try {
+    deleteFinishedDocuments()
+  } catch (error) {
+    logger('error', ['Error when deleting finished documents', error.stack || error.toString()])
+  }
+
   await disconnect()
   await logger('info', ['finished run'])
 })()

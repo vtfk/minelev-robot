@@ -1,6 +1,6 @@
 const { logger } = require('@vtfk/logger')
 const { connect } = require('../lib/mongo-client')
-const { mongodb } = require('../config')
+const { MONGODB } = require('../config')
 const { ObjectId } = require('mongodb')
 
 /*
@@ -59,7 +59,7 @@ module.exports = async (jobDef, documentData) => {
   }
 
   const mongoClient = await connect()
-  const collection = mongoClient.db(mongodb.MONGODB_DB).collection(mongodb.MONGODB_COLLECTION)
+  const collection = mongoClient.db(MONGODB.DB).collection(MONGODB.COLLECTION)
   // Sjekk om det er en bekreftelse_bedrift - i så fall skal det dyttes til originaldokumentet i mongodb, og ikke {_id}_bekreftelse (altså bare til ${_id})
   const result = await collection.updateOne({ _id: new ObjectId(documentData._id.replace('_bekreftelse', '')) }, { $push: { status: { $each: statuses } } }) // Lagre timestamp for fullførte jobber? Lagre alle statuser på en gang like greit?? Neh, vi gjør det, det var lett
   if (result.matchedCount !== 1) throw new Error('OIOIOI, her var det ikke match på et entydig document i MongoDB - ta en sjekk')

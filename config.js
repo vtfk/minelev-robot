@@ -7,9 +7,9 @@ retryList.unshift(0) // Add a zero at the start of the retry list to represent t
 
 module.exports = {
   COUNTY_NUMBER: process.env.COUNTY_NUMBER,
-  DOCUMENT_DIR: process.env.DOCUMENT_DIR || 'testdocs/documents',
   DOCUMENTS_PER_RUN: (process.env.DOCUMENTS_PER_RUN && Number(process.env.DOCUMENTS_PER_RUN)) || 10,
   ENCRYPTION_KEY: process.env.ENCRYPTION_KEY || 'super hemmelig nyckel',
+  DELETE_FINISHED_AFTER_DAYS: process.env.DELETE_FINISHED_AFTER_DAYS || '30',
   RETRY_INTERVAL_MINUTES: retryList,
   TEAMS_STATUS_WEBHOOK_URL: process.env.TEAMS_STATUS_WEBHOOK_URL || 'hfoiudshfkjdsfdsf',
   MONGODB: {
@@ -51,7 +51,8 @@ module.exports = {
   },
   STATISTICS: {
     URL: process.env.STATISTICS_URL,
-    KEY: process.env.STATISTICS_KEY
+    KEY: process.env.STATISTICS_KEY,
+    COMPANY: process.env.STATISTICS_COMPANY || 'OPT'
   },
   SVARUT_EXCEPTIONS: (process.env.SVARUT_EXCEPTIONS && process.env.SVARUT_EXCEPTIONS.split(',')) || ['12345678910']
 }

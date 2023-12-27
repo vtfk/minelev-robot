@@ -1,6 +1,5 @@
 const axios = require('axios').default
-const { krr } = require('../config')
-const generateSystemJwt = require('../lib/generate-jwt')
+const { KRR } = require('../config')
 const { logger } = require('@vtfk/logger')
 
 module.exports = async (jobDef, documentData) => {
@@ -12,7 +11,7 @@ module.exports = async (jobDef, documentData) => {
   logger('info', ['krr', 'Mapper is defined in options. Will use it.'])
   const { ssn } = mapper(documentData)
   if (!ssn) throw new Error('Mapper did not return property "ssn", please make sure it does...')
-  const { data } = await axios.post(krr.KRR_URL, [ssn], { headers: { Authorization: generateSystemJwt(krr.KRR_SECRET) } })
+  const { data } = await axios.post(KRR.URL, [ssn], { headers: { 'x-functions-key': KRR.KEY } })
   if (data.personer && Array.isArray(data.personer) && data.personer.length === 1) {
     logger('info', ['krr', 'Found person in krr'])
     const person = data.personer[0]

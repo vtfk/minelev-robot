@@ -1,5 +1,5 @@
 const axios = require('axios').default
-const { pdf, DOCUMENT_DIR } = require('../config')
+const { PDF } = require('../config')
 const { logger } = require('@vtfk/logger')
 const getSchool = require('vtfk-schools-info')
 const { writeFileSync } = require('fs')
@@ -60,9 +60,9 @@ module.exports = async (jobDef, documentData) => {
     data: pdfData
   }
 
-  const { data } = await axios.post(`${pdf.PDF_URL}/generate`, payload)
+  const { data } = await axios.post(`${PDF.URL}/generate`, payload, { headers: { 'x-functions-key': PDF.KEY } })
   logger('info', ['createPdf', 'Successfully created pdf, saving to file'])
-  const savePath = `./${DOCUMENT_DIR}/queue/${documentData._id}_pdf.txt`
+  const savePath = `./documents/queue/${documentData._id}_pdf.txt`
   writeFileSync(savePath, data.data.base64)
   return {
     msg: 'Successfully saved pdf as base64',

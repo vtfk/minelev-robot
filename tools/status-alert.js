@@ -1,34 +1,29 @@
 (async () => {
   const { logger, logConfig } = require('@vtfk/logger')
-  const { LOG_DIR, mongodb, DOCUMENT_DIR, TEAMS_STATUS_WEBHOOK_URL } = require('../config')
+  const { MONGODB, TEAMS_STATUS_WEBHOOK_URL } = require('../config')
   const { connect, disconnect } = require('../lib/mongo-client')
-  const { appendFileSync, readdirSync } = require('fs')
+  const { readdirSync } = require('fs')
   const axios = require('axios')
+  const { createLocalLogger } = require('../lib/local-logger')
 
-  const today = new Date()
-  const month = today.getMonth() + 1 > 9 ? `${today.getMonth() + 1}` : `0${today.getMonth() + 1}`
-  const logName = `${today.getFullYear()} - ${month}`
-
-  const localLogger = (entry) => {
-    console.log(entry)
-    if (LOG_DIR) {
-      appendFileSync(`${LOG_DIR}/${logName} - status-alert.log`, `${entry}\n`)
-    }
-  }
+  // Set up logging
   logConfig({
-    localLogger
+    teams: {
+      onlyInProd: false
+    },
+    localLogger: createLocalLogger('status-alert')
   })
 
   logger('info', ['statusAlert', 'Fetching ready documents from mongodb'])
   const mongoClient = await connect()
-  const collection = mongoClient.db(mongodb.MONGODB_DB).collection(mongodb.MONGODB_COLLECTION)
+  const collection = mongoClient.db(MONGODB.DB).collection(MONGODB.COLLECTION)
   const numberOfReadyDocuments = await collection.count({ isQueued: true })
   logger('info', ['statusAlert', `${numberOfReadyDocuments} ready documents in queue`])
 
   const dirCheck = {}
   const dirsToCheck = ['copies', 'failed', 'finished', 'queue']
   for (const dir of dirsToCheck) {
-    const files = readdirSync(`./${DOCUMENT_DIR}/${dir}`).filter(file => file.endsWith('.json'))
+    const files = readdirSync(`./documents/${dir}`).filter(file => file.endsWith('.json'))
     dirCheck[dir] = files.length
     logger('info', ['statusAlert', `${files.length} documents in dir "${dir}"`])
   }

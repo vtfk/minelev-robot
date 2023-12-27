@@ -1,8 +1,8 @@
 const axios = require('axios').default
-const { archive, DOCUMENT_DIR } = require('../config')
 const { logger } = require('@vtfk/logger')
 const canSendOnSvarut = require('../lib/can-send-on-svarut')
 const { writeFileSync } = require('fs')
+const { callArchive } = require('../lib/call-archive')
 
 /*
 - Hvis eleven er under 18, og minst en forelder er funnet, og ingen adressegraderinger  send ut
@@ -15,9 +15,6 @@ const { writeFileSync } = require('fs')
 */
 
 module.exports = async (jobDef, documentData) => {
-  const headers = {
-    'Ocp-Apim-Subscription-Key': archive.ARCHIVE_SUBSCRIPTION_KEY
-  }
   /*
    Checks if
    - No receiver has address block
@@ -38,7 +35,10 @@ module.exports = async (jobDef, documentData) => {
         }]
       }
     }
-    const { data } = await axios.post(`${archive.ARCHIVE_URL}/archive`, payload, { headers })
+    const data = await callArchive('archive', payload)
+    if (!data[0].Successful) {
+      throw new Error(`Dispatching of document ${documentData.flowStatus.archive.result.DocumentNumber} was not successful! ErrorMessage: ${data[0].ErrorMessage}`)
+    }
     logger('info', ['svarut', 'Successfully sent document on svarut', data.DocumentNumber])
     return data
   }
@@ -55,7 +55,7 @@ module.exports = async (jobDef, documentData) => {
       Status: 'J'
     }
   }
-  await axios.post(`${archive.ARCHIVE_URL}/archive`, payload, { headers })
+  await callArchive('archive', payload)
   logger('info', ['svarut', 'Successfully set status to Journalfort', documentData.flowStatus.archive.result.DocumentNumber])
 
   if (!documentData.flowStatus?.syncElevmappe?.result?.elevmappe) throw new Error('Job "syncElevmappe" must have been run to be able to run job "svarut"')
@@ -72,10 +72,11 @@ module.exports = async (jobDef, documentData) => {
       elevmappe: documentData.flowStatus.syncElevmappe.result.elevmappe,
       school: documentData.school,
       teacher: documentData.teacher,
-      student: documentData.student
+      student: documentData.student,
+      county: documentData.county
     }
 
-    const filepath = `./${DOCUMENT_DIR}/queue/${documentData._id}_hemmelig.json`
+    const filepath = `./documents/queue/${documentData._id}_hemmelig.json`
     writeFileSync(filepath, JSON.stringify(secretDocument, null, 2))
     return { reason: canSend.reason, filepath }
   }
@@ -91,10 +92,11 @@ module.exports = async (jobDef, documentData) => {
       elevmappe: documentData.flowStatus.syncElevmappe.result.elevmappe,
       school: documentData.school,
       teacher: documentData.teacher,
-      student: documentData.student
+      student: documentData.student,
+      county: documentData.county
     }
 
-    const filepath = `./${DOCUMENT_DIR}/queue/${documentData._id}_foresatte.json`
+    const filepath = `./documents/queue/${documentData._id}_foresatte.json`
     writeFileSync(filepath, JSON.stringify(parentDocument, null, 2))
     return { reason: canSend.reason, filepath }
   }
