@@ -6,19 +6,22 @@ const deleteFinishedDocuments = () => {
   {
     logger('info', ['deleteFinishedDocuments', `Deleting ${DELETE_FINISHED_AFTER_DAYS} days old documents from documents/finished`])
     const dir = './documents/finished'
-    const finishedDocs = readdirSync(dir)
+    const finishedDocs = readdirSync(dir).filter(doc => doc.endsWith('.json'))
     const now = new Date()
     const report = {
       deletedDocs: 0,
       ignoredDocs: 0
     }
     for (const document of finishedDocs) {
-      const { flowStatus: { createdTimestamp } } = require(`.${dir}/${document}`)
+      const { flowStatus: { createdTimestamp, createPdf } } = require(`.${dir}/${document}`)
       const daysOld = Math.floor((now - new Date(createdTimestamp)) / (1000 * 60 * 60 * 24)) // No worries with daylightsavings here :) We can live with a day fra eller til
       if (daysOld > Number(DELETE_FINISHED_AFTER_DAYS)) {
         logger('info', ['deleteFinishedDocuments', `${document} is ${daysOld} days old, which is above timelimit for deletion: ${DELETE_FINISHED_AFTER_DAYS}, deleting.`])
         try {
           unlinkSync(`${dir}/${document}`)
+          if (createPdf?.finished) {
+            unlinkSync(`${dir}/${createPdf.result.filename}`)
+          }
           report.deletedDocs++
         } catch (error) {
           logger('warn', ['deleteFinishedDocuments', `What, ${document} avoided deletion! It will live to see another day (but probably not for long)`, error.stack || error.toString()])

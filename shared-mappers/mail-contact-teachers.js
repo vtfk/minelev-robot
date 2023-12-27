@@ -1,4 +1,4 @@
-const { mail: { MINELEV_URL }, MAIL: { TEMPLATE_NAME } } = require('../config')
+const { MAIL: { TEMPLATE_NAME, MINELEV_URL } } = require('../config')
 
 module.exports = (documentData) => {
   const mailText = `Hei!<br/><br/>${documentData.teacher.name} har sendt varsel til en av dine elever i MinElev.<br />
