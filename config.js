@@ -45,9 +45,9 @@ module.exports = {
     KEY: process.env.MAIL_KEY || 'mimimi',
     TEMPLATE_NAME: process.env.MAIL_TEMPLATE_NAME || 'tempalate'
   },
-  pifu: {
-    PIFU_URL: process.env.PIFU_URL || 'pifu.pifu',
-    PIFU_JWT_SECRET: process.env.PIFU_JWT_SECRET || 'secret secret'
+  PIFU: {
+    URL: process.env.PIFU_URL || 'pifu.pifu',
+    JWT_SECRET: process.env.PIFU_JWT_SECRET || 'secret secret'
   },
   STATISTICS: {
     URL: process.env.STATISTICS_URL,
