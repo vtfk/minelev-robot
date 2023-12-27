@@ -5,7 +5,7 @@ const { readdirSync, unlinkSync } = require('fs')
 const deleteFinishedDocuments = () => {
   {
     logger('info', ['deleteFinishedDocuments', `Deleting ${DELETE_FINISHED_AFTER_DAYS} days old documents from documents/finished`])
-    const dir = `./documents/finished`
+    const dir = './documents/finished'
     const finishedDocs = readdirSync(dir)
     const now = new Date()
     const report = {
@@ -31,7 +31,7 @@ const deleteFinishedDocuments = () => {
   }
   {
     logger('info', ['deleteCopiedDocuments', `Deleting ${DELETE_FINISHED_AFTER_DAYS} days old documents from documents/copies`])
-    const dir = `./documents/copies`
+    const dir = './documents/copies'
     const copiedDocs = readdirSync(dir)
     const now = new Date()
     const report = {

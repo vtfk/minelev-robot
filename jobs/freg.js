@@ -1,5 +1,5 @@
 const axios = require('axios').default
-const { FREG } = require('../config')
+const { FREG, APPREG } = require('../config')
 const { logger } = require('@vtfk/logger')
 const { getMsalToken } = require('../lib/get-msal-token')
 
@@ -22,7 +22,7 @@ module.exports = async (jobDef, documentData) => {
   }
   logger('info', ['freg', 'Mapper is defined in options. Will use it.'])
   const { ssn } = mapper(documentData)
-  
+
   const authConfig = {
     clientId: APPREG.CLIENT_ID,
     tenantId: APPREG.TENANT_ID,
@@ -30,12 +30,12 @@ module.exports = async (jobDef, documentData) => {
     scope: FREG.API_SCOPE
   }
   const accessToken = await getMsalToken(authConfig)
-  
+
   const payload = {
     ssn,
     includeForeldreansvar: true
   }
-  const { data } = await axios.post(freg.FREG_URL, payload, { headers: { Authorization: `Bearer ${accessToken}` } })
+  const { data } = await axios.post(FREG.URL, payload, { headers: { Authorization: `Bearer ${accessToken}` } })
   // Check that ssn was found in freg
   if (!data.foedselsEllerDNummer) {
     logger('info', ['freg', 'Could not find person in freg, setting default fake data for freg'])

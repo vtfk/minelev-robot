@@ -38,7 +38,7 @@ module.exports = async (jobDef, documentData) => {
     template: `${documentData.type}-${documentData.variant}`,
     parameter: archiveData
   }
-  
+
   const data = await callArchive('archive', payload)
   logger('info', ['archive', 'Successfully archived document', data.DocumentNumber])
   return data

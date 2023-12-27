@@ -17,7 +17,7 @@ module.exports = async (jobDef, documentData) => {
   const payload = mapper(documentData)
   payload.system = 'MinElev'
   payload.engine = `${name} ${version}`
-  payload.company = STATISTICS.COMPANY,
+  payload.company = STATISTICS.COMPANY
   payload.department = documentData.school.name
   payload.externalId = documentData._id
   payload.type = `${documentData.type}-${documentData.variant}`

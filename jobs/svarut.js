@@ -1,4 +1,3 @@
-const axios = require('axios').default
 const { logger } = require('@vtfk/logger')
 const canSendOnSvarut = require('../lib/can-send-on-svarut')
 const { writeFileSync } = require('fs')
