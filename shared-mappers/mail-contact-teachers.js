@@ -15,8 +15,7 @@ module.exports = (documentData) => {
         templateData: {
           body: mailText,
           signature: {
-            name: 'MinElev',
-            company: 'Opplæring og folkehelse'
+            name: 'MinElev'
           }
         }
       }
