@@ -1,6 +1,6 @@
 const description = 'Oppretter, arkiverer, og sender en YFF lokal læreplan for en elevs utplasseringer i bedrifter. Sendes svarut til eleven.'
 const getSchoolData = require('../lib/get-school-data')
-const { archive: { ROBOT_RECNO } } = require('../config')
+const { archive: { ROBOT_RECNO }, MAIL: { TEMPLATE_NAME } } = require('../config')
 const { readFileSync } = require('fs')
 
 module.exports = {
@@ -116,7 +116,7 @@ module.exports = {
           from: 'MinElev <minelev@vtfk.no>',
           subject: 'Tester en e-post fra MinElev',
           template: {
-            templateName: 'vtfk',
+            templateName: TEMPLATE_NAME,
             templateData: {
               body: mailText,
               signature: {

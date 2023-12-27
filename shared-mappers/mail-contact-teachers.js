@@ -1,4 +1,4 @@
-const { mail: { MINELEV_URL } } = require('../config')
+const { mail: { MINELEV_URL }, MAIL: { TEMPLATE_NAME } } = require('../config')
 
 module.exports = (documentData) => {
   const mailText = `Hei!<br/><br/>${documentData.teacher.name} har sendt varsel til en av dine elever i MinElev.<br />
@@ -11,7 +11,7 @@ module.exports = (documentData) => {
       from: 'MinElev <minelev@vtfk.no>',
       subject: 'Varsel sendt til en av dine elever',
       template: {
-        templateName: 'vtfk',
+        templateName: TEMPLATE_NAME,
         templateData: {
           body: mailText,
           signature: {

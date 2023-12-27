@@ -1,7 +1,7 @@
 // testet og fornøyd
 const description = 'Oppretter og arkiverer et notat om at det er gjennomført en elevsamtale fra MinElev i elevmappen.'
 const getSchoolData = require('../lib/get-school-data')
-const { archive: { ROBOT_RECNO } } = require('../config')
+const { archive: { ROBOT_RECNO }, MAIL: { TEMPLATE_NAME } } = require('../config')
 const { readFileSync } = require('fs')
 
 module.exports = {
@@ -114,7 +114,7 @@ module.exports = {
           from: 'MinElev <minelev@vtfk.no>',
           subject: 'Tester en e-post fra MinElev',
           template: {
-            templateName: 'vtfk',
+            templateName: TEMPLATE_NAME,
             templateData: {
               body: mailText,
               signature: {

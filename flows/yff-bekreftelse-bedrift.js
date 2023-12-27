@@ -1,6 +1,6 @@
 const description = 'Oppretter, arkiverer, og sender en bekreftelse på utplassering for en elevs utplassering i bedrift. Sendes svarut til bedriften. Samt kopi på e-post til kopimottakere'
 const getSchoolData = require('../lib/get-school-data')
-const { archive: { ROBOT_RECNO } } = require('../config')
+const { archive: { ROBOT_RECNO }, MAIL: { TEMPLATE_NAME } } = require('../config')
 const { readFileSync } = require('fs')
 
 module.exports = {
@@ -122,7 +122,7 @@ module.exports = {
             }
           ],
           template: {
-            templateName: 'vtfk',
+            templateName: TEMPLATE_NAME,
             templateData: {
               body: mailText,
               signature: {
