@@ -1,5 +1,5 @@
 const getSchoolData = require('../lib/get-school-data')
-const { archive: { ROBOT_RECNO } } = require('../config')
+const { ARCHIVE: { ROBOT_RECNO } } = require('../config')
 const { readFileSync } = require('fs')
 
 module.exports = {

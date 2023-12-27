@@ -1,7 +1,7 @@
 // Testet ok
 const description = 'Oppretter, arkiverer, og sender en bekreftelse på at eleven ikke ønsker elevsamtale. Sendes svarut til eleven.'
 const getSchoolData = require('../lib/get-school-data')
-const { archive: { ROBOT_RECNO }, MAIL: { TEMPLATE_NAME } } = require('../config')
+const { ARCHIVE: { ROBOT_RECNO }, MAIL: { TEMPLATE_NAME } } = require('../config')
 const { readFileSync } = require('fs')
 
 module.exports = {

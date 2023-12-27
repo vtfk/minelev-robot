@@ -1,7 +1,7 @@
 // testet og fornøyd
 const description = 'Oppretter og arkiverer et notat om at det er gjennomført en elevsamtale fra MinElev i elevmappen.'
 const getSchoolData = require('../lib/get-school-data')
-const { archive: { ROBOT_RECNO }, MAIL: { TEMPLATE_NAME } } = require('../config')
+const { ARCHIVE: { ROBOT_RECNO }, MAIL: { TEMPLATE_NAME } } = require('../config')
 const { readFileSync } = require('fs')
 
 module.exports = {

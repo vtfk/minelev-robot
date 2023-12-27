@@ -1,6 +1,6 @@
 const description = 'Oppretter, arkiverer, og sender et tilbakemeldingsskjema for en elevs utplassering i bedrift. Sendes svarut til eleven.'
 const getSchoolData = require('../lib/get-school-data')
-const { archive: { ROBOT_RECNO }, MAIL: { TEMPLATE_NAME } } = require('../config')
+const { ARCHIVE: { ROBOT_RECNO }, MAIL: { TEMPLATE_NAME } } = require('../config')
 const { readFileSync } = require('fs')
 
 module.exports = {

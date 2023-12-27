@@ -1,6 +1,6 @@
 const description = 'Oppretter, arkiverer, og sender et varsel i fag. Sendes svarut til eleven, og foresatte dersom under 18. E-post på kopi til kontaktlærere'
 const getSchoolData = require('../lib/get-school-data')
-const { archive: { ROBOT_RECNO } } = require('../config')
+const { ARCHIVE: { ROBOT_RECNO } } = require('../config')
 const { readFileSync } = require('fs')
 const mailContactTeachers = require('../shared-mappers/mail-contact-teachers')
 
