@@ -35,8 +35,8 @@ module.exports = async (jobDef, documentData) => {
 
   // Check address-block and exception, remove address if exists
   if (documentData.flowStatus?.syncElevmappe?.result) {
-    if (documentData.flowStatus.syncElevmappe.result.privatePerson.addressCode > 0) {
-      logger('info', ['createPdf', 'Address code not 0, removing address from pdf'])
+    if (documentData.flowStatus.syncElevmappe.result.privatePerson.addressCode > 0 || documentData.flowStatus.syncElevmappe.result.privatePerson.addressProtection) {
+      logger('info', ['createPdf', 'Address code not 0 or address protection, removing address from pdf'])
       delete pdfData.recipient?.streetAddress
       delete pdfData.recipient?.zipCode
       delete pdfData.recipient?.zipPlace
