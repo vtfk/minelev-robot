@@ -8,6 +8,9 @@ const hasSvarutException = require('../lib/has-svarut-exception')
 const createSchoolFooter = (school) => {
   if (school && school.id) {
     let schoolInfo = getSchool({ schoolId: school.id })
+    if (schoolInfo.length === 0) {
+      schoolInfo = getSchool({ schoolNumber: school.id })
+    }
     if (schoolInfo.length === 1) { // We found specific school info
       schoolInfo = schoolInfo[0]
       const schoolFooter = {}
