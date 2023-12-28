@@ -1,6 +1,6 @@
 (async () => {
   const { logger, logConfig } = require('@vtfk/logger')
-  const { MONGODB, TEAMS_STATUS_WEBHOOK_URL } = require('../config')
+  const { MONGODB, TEAMS_STATUS_WEBHOOK_URL, COUNTY_NUMBER } = require('../config')
   const { connect, disconnect } = require('../lib/mongo-client')
   const { readdirSync } = require('fs')
   const axios = require('axios')
@@ -17,7 +17,7 @@
   logger('info', ['statusAlert', 'Fetching ready documents from mongodb'])
   const mongoClient = await connect()
   const collection = mongoClient.db(MONGODB.DB).collection(MONGODB.COLLECTION)
-  const numberOfReadyDocuments = await collection.count({ isQueued: true })
+  const numberOfReadyDocuments = await collection.count({ isQueued: true, 'county.countyNumber': COUNTY_NUMBER })
   logger('info', ['statusAlert', `${numberOfReadyDocuments} ready documents in queue`])
 
   const dirCheck = {}
@@ -56,7 +56,7 @@
     '@context': 'http://schema.org/extensions',
     themeColor: colour,
     summary: msg,
-    title: '<h1 style="color:green;"> Statusrapport - MinElev robot </h1>',
+    title: `Statusrapport - MinElev robot - ${COUNTY_NUMBER === '39' ? 'Vestfold' : 'Telemark'}`,
     // text: '![Alt text for the image](https://cdn.iconscout.com/icon/premium/png-256-thumb/room-service-4114792-3410705.png)',
     sections: [
       {
