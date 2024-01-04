@@ -13,6 +13,6 @@ module.exports = async (jobDef, documentData) => {
   if (!enterpriseNumber) throw new Error('Mapper must return property "enterpriseNumber"')
 
   const data = await callArchive('SyncEnterprise', { orgnr: enterpriseNumber })
-  logger('info', ['syncEnterprise', 'Successfully synched enterprise', 'RecNo', data.result.enterprise.recno])
+  logger('info', ['syncEnterprise', 'Successfully synched enterprise', 'RecNo', data.enterprise.recno])
   return data
 }
