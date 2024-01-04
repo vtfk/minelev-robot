@@ -47,7 +47,7 @@ module.exports = {
   createPdf: {
     enabled: true,
     mapper: (documentData) => {
-      const enterprise = documentData.flowStatus.syncEnterprise.result.result.enterprise
+      const enterprise = documentData.flowStatus.syncEnterprise.result.enterprise
       if (!enterprise?.PostAddress?.StreetAddress) throw new Error('Could not get PostAddress from syncEnterprise job - please check enterprise')
       return {
         recipient: {
