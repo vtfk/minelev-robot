@@ -22,7 +22,7 @@
     "dotenv": "^16.1.4",
     "file-system-cache": "^2.4.4",
     "jsonwebtoken": "^9.0.0",
-    "mongodb": "^5.6.0",
+    "mongodb": "^6.0.0",
     "node-cache": "^5.1.2",
     "vtfk-schools-info": "^3.4.0"
   },
