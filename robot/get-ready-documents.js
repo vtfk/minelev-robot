@@ -9,7 +9,7 @@ const getReadyDocuments = async () => {
     const mongoClient = await connect()
     logger('info', ['queue', 'get next document in queue'])
     const collection = mongoClient.db(MONGODB.DB).collection(MONGODB.COLLECTION)
-    const documents = await collection.find({ isQueued: true, 'county.countyNumber': COUNTY_NUMBER }).sort({ timestamp: 1 }).limit(DOCUMENTS_PER_RUN).toArray() // Get documents for county and ready
+    const documents = await collection.find({ isQueued: true }).sort({ timestamp: 1 }).limit(DOCUMENTS_PER_RUN).toArray() // Get documents and ready
     logger('info', ['queue', `got ${documents.length} documents from queue`, documents.length === 0 ? 'No new documents' : 'Saving documents to local files'])
 
     for (const document of documents) {
