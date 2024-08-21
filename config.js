@@ -1,11 +1,14 @@
 // Global config
 require('dotenv').config()
 
+const { getCurrentSchoolYear } = require('./lib/get-school-year')
+
 // Retry list (number of minutes to wait before next retry [15, 60, 240, 3600] => wait 15 minutes until first retry, then 60 minutes until second retry and so on)
 const retryList = (process.env.RETRY_INTERVALS_MINUTES && process.env.RETRY_INTERVALS_MINUTES.split(',').map(numStr => Number(numStr))) || [15, 60, 240, 3600]
 retryList.unshift(0) // Add a zero at the start of the retry list to represent the first run
 
 module.exports = {
+  NODE_ENV: process.env.NODE_ENV || 'dev',
   COUNTY_NUMBER: process.env.COUNTY_NUMBER,
   DOCUMENTS_PER_RUN: (process.env.DOCUMENTS_PER_RUN && Number(process.env.DOCUMENTS_PER_RUN)) || 10,
   ENCRYPTION_KEY: process.env.ENCRYPTION_KEY || 'super hemmelig nyckel',
@@ -14,7 +17,7 @@ module.exports = {
   TEAMS_STATUS_WEBHOOK_URL: process.env.TEAMS_STATUS_WEBHOOK_URL || 'hfoiudshfkjdsfdsf',
   MONGODB: {
     CONNECTION_STRING: process.env.MONGODB_CONNECTION_STRING || undefined,
-    COLLECTION: process.env.MONGODB_COLLECTION || undefined,
+    COLLECTION: (process.env.MONGODB_COLLECTION && `${process.env.MONGODB_COLLECTION}-${getCurrentSchoolYear('-')}`) || undefined, // Automatically new collection every new schoolYear (swaps 15th of July)
     DB: process.env.MONGODB_DB || undefined
   },
   KRR: {
@@ -43,11 +46,13 @@ module.exports = {
     MINELEV_URL: process.env.MINELEV_URL || 'minelev.vtfk.no',
     URL: process.env.MAIL_URL || 'mailmau',
     KEY: process.env.MAIL_KEY || 'mimimi',
-    TEMPLATE_NAME: process.env.MAIL_TEMPLATE_NAME || 'tempalate'
+    TEMPLATE_NAME: process.env.MAIL_TEMPLATE_NAME || 'tempalate',
+    SENDER: process.env.MAIL_SENDER || 'MinElev-TEST <minelev@vestfoldfylke.no>',
+    DEV_RECEIVERS: (process.env.MAIL_DEV_RECEIVERS && process.env.MAIL_DEV_RECEIVERS.split(',')) || []
   },
-  PIFU: {
-    URL: process.env.PIFU_URL || 'pifu.pifu',
-    JWT_SECRET: process.env.PIFU_JWT_SECRET || 'secret secret'
+  FINT_FOLK: {
+    URL: process.env.FINT_FOLK_URL || 'fint.fintfolk',
+    API_SCOPE: process.env.FINT_FOLK_API_SCOPE || 'skup'
   },
   STATISTICS: {
     URL: process.env.STATISTICS_URL,

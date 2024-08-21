@@ -88,9 +88,9 @@ module.exports = {
       const period = documentData.content.period.nb
       if (!period) throw new Error('Missing property "documentData.content.period.nb", please check.')
       return {
-        title: `Varsel - orden - ${documentData.student.classId} - ${period} - ${schoolYear}`,
-        unofficialTitle: `Varsel - orden - ${documentData.student.name} - ${documentData.student.classId} - ${period} - ${schoolYear}`,
-        fileTitle: `Varsel - orden - ${documentData.student.classId.replace(':', '')} - ${period} - ${schoolYear}`,
+        title: `Varsel - orden - ${documentData.student.basisgruppe} - ${period} - ${schoolYear}`,
+        unofficialTitle: `Varsel - orden - ${documentData.student.name} - ${documentData.student.basisgruppe} - ${period} - ${schoolYear}`,
+        fileTitle: `Varsel - orden - ${documentData.student.basisgruppe.replace(':', '')} - ${period} - ${schoolYear}`,
         ssn: privatePerson.ssn,
         documentDate: new Date(documentData.created.timestamp).toISOString(),
         caseNumber: documentData.flowStatus.syncElevmappe.result.elevmappe.CaseNumber,

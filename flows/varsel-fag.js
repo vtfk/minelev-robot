@@ -91,9 +91,9 @@ module.exports = {
       const courseTitle = courses.length === 1 ? `fag - ${courses[0].name}` : 'flere fag'
       const courseFileTitle = courseTitle.replaceAll('/', '').replaceAll(':', '')
       return {
-        title: `Varsel - ${courseTitle} - ${documentData.student.classId} - ${period} - ${schoolYear}`,
-        unofficialTitle: `Varsel - ${courseTitle} - ${documentData.student.name} - ${documentData.student.classId} - ${period} - ${schoolYear}`,
-        fileTitle: `Varsel - ${courseFileTitle} - ${documentData.student.classId.replace(':', '')} - ${period} - ${schoolYear}`,
+        title: `Varsel - ${courseTitle} - ${documentData.student.basisgruppe} - ${period} - ${schoolYear}`,
+        unofficialTitle: `Varsel - ${courseTitle} - ${documentData.student.name} - ${documentData.student.basisgruppe} - ${period} - ${schoolYear}`,
+        fileTitle: `Varsel - ${courseFileTitle} - ${documentData.student.basisgruppe.replace(':', '')} - ${period} - ${schoolYear}`,
         ssn: privatePerson.ssn,
         documentDate: new Date(documentData.created.timestamp).toISOString(),
         caseNumber: documentData.flowStatus.syncElevmappe.result.elevmappe.CaseNumber,

@@ -1,6 +1,6 @@
 const description = 'Oppretter, arkiverer, og sender en bekreftelse på utplassering for en elevs utplassering i bedrift. Sendes svarut til bedriften. Samt kopi på e-post til kopimottakere'
 const getSchoolData = require('../lib/get-school-data')
-const { ARCHIVE: { ROBOT_RECNO }, MAIL: { TEMPLATE_NAME } } = require('../config')
+const { ARCHIVE: { ROBOT_RECNO }, MAIL: { TEMPLATE_NAME, SENDER } } = require('../config')
 const { readFileSync } = require('fs')
 
 module.exports = {
@@ -112,7 +112,7 @@ module.exports = {
       for (const receiver of receivers) {
         mails.push({
           to: [receiver],
-          from: 'MinElev <minelev@vtfk.no>',
+          from: SENDER,
           subject: 'Bekreftelse om utplassering av elev',
           attachments: [
             {

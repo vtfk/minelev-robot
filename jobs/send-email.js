@@ -1,4 +1,4 @@
-const { MAIL } = require('../config')
+const { MAIL, NODE_ENV } = require('../config')
 const axios = require('axios').default
 const { logger } = require('@vtfk/logger')
 
@@ -13,6 +13,16 @@ module.exports = async (jobDef, documentData) => {
 
   const mailPayloads = Array.isArray(mailData) ? mailData : [mailData]
   logger('info', ['sendMail', `Sending ${mailPayloads.length} mails`])
+
+  // If NODE_ENV is not production - override email receivers to MAIL.DEV_RECEIVERS, don't want to send to actual users or organization in test / dev
+  if (NODE_ENV !== 'production') {
+    logger('info', ['sendMail', `NODE_ENV is not production. Overriding receivers to MAIL.DEV_RECEIVERS: ${MAIL.DEV_RECEIVERS}`, 'original receivers', mailPayloads.map(m => m.to.join(', ')).join(', ')])
+    mailPayloads.forEach(payload => {
+      payload.to = MAIL.DEV_RECEIVERS
+      if (payload.cc) payload.cc = MAIL.DEV_RECEIVERS
+      if (payload.bcc) payload.bcc = MAIL.DEV_RECEIVERS
+    })
+  }
 
   for (const mailPayload of mailPayloads) {
     logger('info', ['sendMail', `Sending mail to ${mailPayload.to.length} recipients`])

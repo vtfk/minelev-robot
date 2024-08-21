@@ -112,12 +112,12 @@ const handleFailedJob = (jobName, documentData, document, error) => {
 const runJob = async (document, flow, jobName, documentData, jobFunction) => {
   documentData.flowStatus = setUpJob(flow, jobName, documentData)
   if (shouldRunJob(flow, jobName, documentData)) {
-    logger('info', ['running job', jobName, 'student', documentData.student.username])
+    logger('info', ['running job', jobName, 'student', documentData.student.feidenavn])
     try {
       documentData.flowStatus[jobName].result = await jobFunction(flow[jobName], documentData)
       documentData.flowStatus[jobName].finished = true
       documentData.flowStatus[jobName].finishedTimestamp = new Date().getTime()
-      logger('info', ['finished job', jobName, 'student', documentData.student.username])
+      logger('info', ['finished job', jobName, 'student', documentData.student.feidenavn])
     } catch (error) {
       documentData.flowStatus.failed = true
       handleFailedJob(jobName, documentData, document, error)
@@ -168,7 +168,7 @@ const handleDocument = async (document) => {
   // Check if content is encrypted, and decrypt if necessary
   if (documentData.isEncrypted) {
     logger('info', ['Content is encrypted. Decrypting.'])
-    const decrypted = await decryptContent(documentData.content, ENCRYPTION_KEY)
+    const decrypted = decryptContent(documentData.content, ENCRYPTION_KEY)
     documentData.content = decrypted
     documentData.isEncrypted = false
   }

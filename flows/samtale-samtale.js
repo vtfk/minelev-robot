@@ -83,9 +83,9 @@ module.exports = {
       const schoolData = getSchoolData(documentData.school.id)
       const prettyDate = formatDate(new Date(documentData.created.timestamp))
       return {
-        title: `Elevsamtale - gjennomført - ${prettyDate} - ${documentData.student.classId}`,
-        unofficialTitle: `Elevsamtale - gjennomført - ${documentData.student.name} - ${prettyDate} - ${documentData.student.classId}`,
-        fileTitle: `Elevsamtale - gjennomført - ${prettyDate} - ${documentData.student.classId.replaceAll(':', '')}`,
+        title: `Elevsamtale - gjennomført - ${prettyDate} - ${documentData.student.basisgruppe}`,
+        unofficialTitle: `Elevsamtale - gjennomført - ${documentData.student.name} - ${prettyDate} - ${documentData.student.basisgruppe}`,
+        fileTitle: `Elevsamtale - gjennomført - ${prettyDate} - ${documentData.student.basisgruppe.replaceAll(':', '')}`,
         documentDate: new Date(documentData.created.timestamp).toISOString(),
         caseNumber: documentData.flowStatus.syncElevmappe.result.elevmappe.CaseNumber,
         schoolEnterpriseNumber: schoolData.organizationNumber,
