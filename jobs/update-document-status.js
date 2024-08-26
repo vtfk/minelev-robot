@@ -47,6 +47,7 @@ module.exports = async (jobDef, documentData) => {
     logger('info', ['updateDocumentStatus', 'Document is archived, setting status "archived"'])
     statuses.push({
       status: 'archived',
+      message: documentData.flowStatus.archive?.result?.DocumentNumber || null,
       timestamp: documentData.flowStatus.archive.finishedTimestamp
     })
   }
