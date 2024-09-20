@@ -138,7 +138,7 @@ module.exports = {
     mapper: (documentData) => {
       return {
         description,
-        bedrifter: documentData.content.utplasseringer.map(u => u.name).join(', ')
+        bedrift: documentData.content.utplassering.name
       }
     }
   },

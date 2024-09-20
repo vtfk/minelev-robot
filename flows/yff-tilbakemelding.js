@@ -57,7 +57,7 @@ module.exports = {
         },
         student: {
           name: documentData.student.name,
-          level: documentData.student.level
+          level: documentData.content.utplassering.level
         },
         created: {
           timestamp: documentData.created.timestamp
