@@ -17,7 +17,7 @@ module.exports = async (jobDef, documentData) => {
   }
 
   try {
-    const payload = { ssn }
+    const payload = { ssn, forceUpdate: true } // forceUpdate will update elevmappe-privateperson with freg-data even if it already exists
     const data = await callArchive('SyncElevmappe', payload)
     logger('info', ['syncElevmappe', 'Successfully synched elevmappe', 'privatePerson recNo', data.privatePerson.recno, 'elevmappe saksnummer', data.elevmappe.CaseNumber])
     return data
