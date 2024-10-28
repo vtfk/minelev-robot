@@ -23,4 +23,3 @@ module.exports = async (jobDef, documentData) => {
   logger('info', ['getContactTeachers', `Got ${contactTeachers.length} contact teachers from FINTFOLK`])
   return contactTeachers
 }
-

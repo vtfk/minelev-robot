@@ -16,7 +16,7 @@ module.exports = {
     }
   },
   freg: {
-    // Vi trenger ikke freg her - brukes for å hente foreldre
+    // Vi trenger her - brukes for å hente foreldre
     enabled: true,
     mapper: (documentData) => {
       return {
