@@ -59,5 +59,5 @@ module.exports = {
     KEY: process.env.STATISTICS_KEY,
     COMPANY: process.env.STATISTICS_COMPANY || 'OPT'
   },
-  SVARUT_EXCEPTIONS: (process.env.SVARUT_EXCEPTIONS && process.env.SVARUT_EXCEPTIONS.split(',')) || ['12345678910']
+  SVARUT_EXCEPTIONS: (process.env.SVARUT_EXCEPTIONS && process.env.SVARUT_EXCEPTIONS.split(',')) || ['12345678911']
 }

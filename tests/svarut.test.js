@@ -424,14 +424,14 @@ const allIsGood = {
       result: [
         {
           privatePerson: {
-            ssn: '12345678911',
+            ssn: '12345678912',
             zipCode: '1234',
             addressCode: 0
           }
         },
         {
           privatePerson: {
-            ssn: '12345678912',
+            ssn: '12345678913',
             zipCode: '1234',
             addressCode: 0
           }

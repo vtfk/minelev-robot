@@ -1,10 +1,20 @@
 const { logger } = require('@vtfk/logger')
 const { callArchive } = require('../lib/call-archive')
+const hasSvarutException = require('../lib/has-svarut-exception')
 
 module.exports = async (jobDef, documentData) => {
   if (!documentData.flowStatus?.freg?.result) {
     throw new Error('Job "freg" must be run before you can run job "syncParents"')
   }
+  if (!documentData.flowStatus?.syncElevmappe?.result) {
+    throw new Error('Job "syncElevmappe" must be run before you can run job "syncParents"')
+  }
+  // Sjekk om adressesperring, returner tom liste hvis det er det
+  if (hasSvarutException(documentData.flowStatus.freg.result.foedselsEllerDNummer) || hasSvarutException(documentData.student.personalIdNumber) || documentData.flowStatus.syncElevmappe.result.privatePerson.addressProtection) {
+    logger('info', ['addParentsIfUnder18', 'Student has svarut exception or address block, will not sync parents'])
+    return []
+  }
+
   if (!documentData.flowStatus?.freg?.result?.foreldreansvar) {
     throw new Error('Could not find array "foreldreansvar" on freg result, something is wrong...')
   }
