@@ -17,7 +17,7 @@
     "@azure/msal-node": "^1.17.3",
     "@vestfoldfylke/msal-token": "^1.0.1",
     "@vtfk/encryption": "^1.0.3",
-    "@vtfk/logger": "^6.0.1",
+    "@vtfk/logger": "^6.2.0",
     "axios": "^1.7.4",
     "dotenv": "^16.1.4",
     "file-system-cache": "^2.4.4",

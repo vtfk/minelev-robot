@@ -28,67 +28,124 @@
     logger('info', ['statusAlert', `${files.length} documents in dir "${dir}"`])
   }
 
-  let msg
   let colour
   const problems = numberOfReadyDocuments + dirCheck.failed
   if (problems === 0) {
-    msg = 'Alt er tipp topp, tommel opp!'
-    colour = '1ea80c'
+    // msg = 'Alt er tipp topp, tommel opp!'
+    colour = 'good'
   } else if (problems > 100) {
-    msg = `${problems} dokumenter i kø  + dokumenter i failed. Dette er kritisk mange feil og noe må gjøres!`
-    colour = 'a80c0c'
+    // msg = `${problems} dokumenter i kø  + dokumenter i failed. Dette er kritisk mange feil og noe må gjøres!`
+    colour = 'attention'
   } else if (problems > 50) {
-    msg = `${problems} dokumenter i kø  + dokumenter i failed. Dette er en del feil altså og noe bør gjøres!`
-    colour = 'ab57f35'
+    // msg = `${problems} dokumenter i kø  + dokumenter i failed. Dette er en del feil altså og noe bør gjøres!`
+    colour = 'attention'
   } else if (problems > 20) {
-    msg = `${problems} dokumenter i kø  + dokumenter i failed. Dette er noen feil og ta en sjekk om du har tid.`
-    colour = 'e2ed13'
+    // msg = `${problems} dokumenter i kø  + dokumenter i failed. Dette er noen feil og ta en sjekk om du har tid.`
+    colour = 'warning'
   } else if (problems > 10) {
-    msg = `${problems} dokumenter i kø  + dokumenter i failed. Det er sikkert noe megafarlig, ta en sjekk om du har tid.`
-    colour = 'e2ed13'
+    // msg = `${problems} dokumenter i kø  + dokumenter i failed. Det er sikkert noe megafarlig, ta en sjekk om du har tid.`
+    colour = 'warning'
   } else {
-    msg = `${problems} dokumenter i kø  + dokumenter i failed. Ta en sjekk om du gidder.`
-    colour = 'e2ed13'
+    // msg = `${problems} dokumenter i kø  + dokumenter i failed. Ta en sjekk om du gidder.`
+    colour = 'warning'
   }
 
   const teamsMsg = {
-    '@type': 'MessageCard',
-    '@context': 'http://schema.org/extensions',
-    themeColor: colour,
-    summary: msg,
-    title: `Statusrapport - MinElev robot - ${COUNTY_NUMBER === '39' ? 'Vestfold' : 'Telemark'}`,
-    // text: '![Alt text for the image](https://cdn.iconscout.com/icon/premium/png-256-thumb/room-service-4114792-3410705.png)',
-    sections: [
+    type: 'message',
+    attachments: [
       {
-        activityTitle: `**${numberOfReadyDocuments}** dokumenter i kø i mongodb`,
-        activitySubtitle: 'Dette er dokumenter som er sendt inn fra MinElev, og klare for å plukkes av roboten',
-        markdown: true
-      },
-      {
-        activityTitle: `**${dirCheck.queue}** dokumenter i kø på server`,
-        activitySubtitle: 'Dette er dokumenter som er sendt inn fra MinElev, og ligger klare for håndtering i kø på server',
-        markdown: true
-      },
-      {
-        activityTitle: `**${dirCheck.failed}** dokumenter som har feilet på server`,
-        activitySubtitle: 'Dette er dokumenter som er forsøkt for mange ganger, og trenger hjelp',
-        markdown: true
-      },
-      {
-        activityTitle: `**${dirCheck.finished}** dokumenter som er ferdigstilt på server`,
-        activitySubtitle: 'Dette er dokumenter som er sendt inn fra MinElev, og er ferdig håndtert på server - vil bli slettet ved neste slettejobb',
-        markdown: true
-      },
-      {
-        activityTitle: `**${dirCheck.copies}** dokumenter som ligger kopiert som backup på server`,
-        activitySubtitle: 'Dette er dokumenter som er sendt inn fra MinElev, og er kopiert som backup på server - vil bli slettet ved neste slettejobb',
-        markdown: true
-      },
-      {
-        text: '![Alt text for the image](https://media3.giphy.com/media/N8wR1WZobKXaE/giphy.gif)'
+        contentType: 'application/vnd.microsoft.card.adaptive',
+        contentUrl: null,
+        content: {
+          $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+          type: 'AdaptiveCard',
+          version: '1.5',
+          msteams: { width: 'full' },
+          body: [
+            {
+              type: 'TextBlock',
+              text: `Statusrapport - MinElev robot - ${COUNTY_NUMBER === '39' ? 'Vestfold' : 'Telemark'}`,
+              wrap: true,
+              style: 'heading',
+              color: colour
+            },
+            // Kø
+            {
+              type: 'TextBlock',
+              text: `**${numberOfReadyDocuments}** dokumenter i kø i mongodb`,
+              wrap: true,
+              weight: 'Bolder',
+              size: 'Medium'
+            },
+            {
+              type: 'TextBlock',
+              text: 'Dette er dokumenter som er sendt inn fra MinElev, og klare for å plukkes av roboten',
+              wrap: true
+            },
+            // Kø på server
+            {
+              type: 'TextBlock',
+              text: `**${dirCheck.queue}** dokumenter i kø på server`,
+              wrap: true,
+              weight: 'Bolder',
+              size: 'Medium'
+            },
+            {
+              type: 'TextBlock',
+              text: 'Dette er dokumenter som er sendt inn fra MinElev, og ligger klare for håndtering i kø på server',
+              wrap: true
+            },
+            // Feilet på server
+            {
+              type: 'TextBlock',
+              text: `**${dirCheck.failed}** dokumenter som har feilet på server`,
+              wrap: true,
+              weight: 'Bolder',
+              size: 'Medium'
+            },
+            {
+              type: 'TextBlock',
+              text: 'Dette er dokumenter som er forsøkt for mange ganger, og trenger hjelp',
+              wrap: true
+            },
+            // Ferdig på server
+            {
+              type: 'TextBlock',
+              text: `**${dirCheck.finished}** dokumenter som er ferdigstilt på server`,
+              wrap: true,
+              weight: 'Bolder',
+              size: 'Medium'
+            },
+            {
+              type: 'TextBlock',
+              text: 'Dette er dokumenter som er sendt inn fra MinElev, og er ferdig håndtert på server - vil bli slettet ved neste slettejobb',
+              wrap: true
+            },
+            // Backup på server
+            {
+              type: 'TextBlock',
+              text: `**${dirCheck.copies}** dokumenter som ligger kopiert som backup på server`,
+              wrap: true,
+              weight: 'Bolder',
+              size: 'Medium'
+            },
+            {
+              type: 'TextBlock',
+              text: 'Dette er dokumenter som er sendt inn fra MinElev, og er kopiert som backup på server - vil bli slettet ved neste slettejobb',
+              wrap: true
+            },
+            // Gif
+            {
+              type: 'Image',
+              url: 'https://media3.giphy.com/media/N8wR1WZobKXaE/giphy.gif',
+              horizontalAlignment: 'Center'
+            }
+          ]
+        }
       }
     ]
   }
+
   const headers = { contentType: 'application/vnd.microsoft.teams.card.o365connector' }
   await axios.post(TEAMS_STATUS_WEBHOOK_URL, teamsMsg, { headers })
   await disconnect()
