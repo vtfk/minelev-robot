@@ -116,8 +116,8 @@ module.exports = {
           subject: 'Bekreftelse om utplassering av elev',
           attachments: [
             {
-              content: readFileSync(documentData.flowStatus.createPdf.result.path, 'utf-8'),
-              filename: 'Bekreftelse-utplassering.pdf',
+              data: readFileSync(documentData.flowStatus.createPdf.result.path, 'utf-8'),
+              name: 'Bekreftelse-utplassering.pdf',
               type: 'application/pdf'
             }
           ],
