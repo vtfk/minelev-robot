@@ -33,10 +33,19 @@ module.exports = async (jobDef, documentData) => {
     }
   }
 
-  const payload = {
-    system: 'minelev',
-    template: `${documentData.type}-${documentData.variant}`,
-    parameter: archiveData
+  let payload
+  if (jobDef.rawCall) {
+    payload = {
+      service: 'DocumentService',
+      method: 'CreateDocument',
+      parameter: archiveData
+    }
+  } else {
+    payload = {
+      system: 'minelev',
+      template: `${documentData.type}-${documentData.variant}`,
+      parameter: archiveData
+    }
   }
 
   const data = await callArchive('archive', payload)
