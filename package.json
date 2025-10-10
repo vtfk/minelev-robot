@@ -17,12 +17,12 @@
     "@vestfoldfylke/msal-token": "^1.0.1",
     "@vtfk/encryption": "^1.0.3",
     "@vtfk/logger": "^6.3.4",
-    "axios": "^1.11.0",
-    "dotenv": "^17.2.1",
+    "axios": "^1.12.2",
+    "dotenv": "^17.2.3",
     "file-system-cache": "^2.4.7",
     "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.18.0",
-    "vtfk-schools-info": "^3.4.0"
+    "mongodb": "^6.20.0",
+    "vtfk-schools-info": "^3.4.2"
   },
   "standard": {
     "env": [
@@ -30,8 +30,8 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^29.5.2",
-    "jest": "^29.5.0",
-    "standard": "^17.1.0"
+    "@types/jest": "^30.0.0",
+    "jest": "^30.2.0",
+    "standard": "^17.1.2"
   }
 }
