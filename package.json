@@ -18,7 +18,7 @@
     "@vtfk/encryption": "^1.0.3",
     "@vtfk/logger": "^6.3.4",
     "axios": "^1.12.2",
-    "dotenv": "^17.2.3",
+    "dotenv": "^18.0.0",
     "file-system-cache": "^2.4.7",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.20.0",
